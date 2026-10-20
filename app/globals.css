@@ -227,10 +227,10 @@ button { font-family: inherit; }
 }
 .hero-titles { display: flex; flex-direction: column; }
 .hero-line { width: 72px; height: 2px; background: var(--accent); margin-bottom: clamp(20px, 3vh, 32px); }
-.hero-italic { font-size: clamp(46px, 6.4vw, 108px); line-height: 0.9; letter-spacing: -0.02em; }
+.hero-italic { font-size: clamp(34px, 4.4vw, 72px); line-height: 0.9; letter-spacing: -0.02em; }
 .hero h1 {
   margin: 0;
-  font-size: clamp(52px, 8.6vw, 148px);
+  font-size: clamp(42px, 6vw, 100px);
   line-height: 0.88;
   font-weight: 800;
   letter-spacing: -0.04em;

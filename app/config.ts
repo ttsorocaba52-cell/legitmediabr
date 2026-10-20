@@ -25,7 +25,7 @@ export const WORKS: Work[] = [
   { img: "/assets/p13.webp", title: "Ferrari 296", meta: "Filme", pos: "55% 60%", car: "Ferrari 296", loc: "Pista", exif: ["50mm", "f/5.6", "1/50", "100"], video: "/assets/ferrari" },
   { img: "/assets/p11.webp", title: "Painel", meta: "Detalhe", pos: "50% 50%", car: "Ferrari", loc: "Estúdio", exif: ["24mm", "f/2", "1/125", "1600"] },
   { img: "/assets/p04.webp", title: "Comboio", meta: "Evento", pos: "30% 50%", car: "VW Polo GTS", loc: "Rodovia", exif: ["35mm", "f/4", "1/60", "100"], video: "/assets/polo-gts" },
-  { img: "/assets/p12.webp", title: "Lamborghini", meta: "Em movimento", pos: "35% 50%", car: "Lamborghini", loc: "Avenida", exif: ["24mm", "f/5", "1/50", "200"] },
+  { img: "/assets/p12.webp", title: "Lamborghini", meta: "Em movimento", pos: "35% 50%", car: "Lamborghini", loc: "Avenida", exif: ["24mm", "f/5", "1/50", "200"], video: "/assets/lamborghini" },
   { img: "/assets/p02.webp", title: "Astra", meta: "Em movimento", pos: "50% 55%", car: "Chevrolet Astra", loc: "Rodovia", exif: ["35mm", "f/4", "1/60", "100"], video: "/assets/astra" },
 ];
 

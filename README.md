@@ -14,11 +14,10 @@ npm run build
 - `app/config.ts`: @ do Instagram (todos os CTAs abrem o Direct), links das redes, projetos e especialidades.
 - `app/page.tsx`: textos e estrutura das seções.
 - `app/globals.css`: tokens de cor, tipografia e layout.
-- `public/assets/`: imagens em WebP.
+- `public/assets/`: imagens em WebP e o vídeo do hero (`hero.*` 1080p e `hero-720.*` para celular, em WebM e MP4, mais o `hero-poster.webp`).
 
 ## Pendências
 
 - Confirmar o @ do Instagram e os links de YouTube e Vimeo em `app/config.ts`.
 - Trocar as imagens (prints do Instagram, baixa resolução) pelas originais em 1600–2400px.
-- Vídeo no hero (opcional): pedir ao Felipe um arquivo horizontal já editado.
 - Depoimentos ou marcas de clientes, e imagem de compartilhamento (OG).

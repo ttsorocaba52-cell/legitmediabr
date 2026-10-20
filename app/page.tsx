@@ -1,5 +1,5 @@
 import Header from "./components/Header";
-import HeroImage from "./components/HeroImage";
+import HeroVideo from "./components/HeroVideo";
 import Reveal from "./components/Reveal";
 import Services from "./components/Services";
 import Works from "./components/Works";
@@ -50,7 +50,7 @@ export default function Home() {
       <Reveal />
 
       <section id="top" className="hero">
-        <HeroImage />
+        <HeroVideo />
         <div className="shade hero-shade-v" />
         <div className="shade hero-shade-h" />
         <div className="wrap hero-content">

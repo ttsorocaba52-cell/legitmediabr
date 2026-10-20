@@ -20,6 +20,29 @@ const onActivate = (fn: () => void) => (e: React.KeyboardEvent) => {
 export default function Works() {
   const [active, setActive] = useState(2);
   const [lb, setLb] = useState<number | null>(null);
+  const [snap, setSnap] = useState(0); // cartão do carrossel (celular) que está no centro
+  const carousel = useRef<HTMLDivElement>(null);
+
+  // O cartão mais visível (≥ 55%) é o "ativo": toca o vídeo e os outros param.
+  useEffect(() => {
+    const el = carousel.current;
+    if (!el) return;
+    const ratios = new Map<Element, number>();
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => ratios.set(e.target, e.intersectionRatio));
+        let best = -1, bestRatio = 0.55;
+        Array.from(el.children).forEach((c, i) => {
+          const r = ratios.get(c) ?? 0;
+          if (r >= bestRatio) { best = i; bestRatio = r; }
+        });
+        if (best >= 0) setSnap(best);
+      },
+      { root: null, threshold: [0, 0.25, 0.55, 0.75, 1] },
+    );
+    Array.from(el.children).forEach((c) => io.observe(c));
+    return () => io.disconnect();
+  }, []);
 
   return (
     <>
@@ -70,7 +93,7 @@ export default function Works() {
       </div>
 
       {/* Celular: carrossel com rolagem por toque; os cartões também recebem foco. */}
-      <div className="works-carousel mobile-only" role="group" aria-label="Projetos selecionados">
+      <div ref={carousel} className="works-carousel mobile-only" role="group" aria-label="Projetos selecionados">
         {WORKS.map((w, i) => (
           <div
             key={w.title}
@@ -81,6 +104,7 @@ export default function Works() {
             onKeyDown={onActivate(() => setLb(i))}
           >
             <img className="cover" src={w.img} alt="" style={{ objectPosition: w.pos }} loading="lazy" />
+            {w.video && <WorkVideo src={w.video} pos={w.pos} active={snap === i} />}
             <div className="shade" />
             <div className="work-card-text">
               <strong>{w.title}</strong>

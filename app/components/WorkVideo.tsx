@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
 export default function WorkVideo({ src, pos, active }: { src: string; pos: string; active: boolean }) {
   const ref = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
-  const [inView, setInView] = useState(true);
+  const [inView, setInView] = useState(false); // só baixa/toca depois de confirmar que está na tela
 
   useEffect(() => {
     const v = ref.current;
@@ -22,7 +22,8 @@ export default function WorkVideo({ src, pos, active }: { src: string; pos: stri
     const v = ref.current;
     if (!v) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (active && inView && !reduced) {
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+    if (active && inView && !reduced && !saveData) {
       v.play().catch(() => {});
     } else {
       v.pause();

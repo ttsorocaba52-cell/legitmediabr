@@ -886,26 +886,6 @@ main:focus { outline: none; }
 }
 .skip-link:focus { top: max(16px, env(safe-area-inset-top)); color: var(--bg); }
 
-/* pausa do vídeo de fundo (WCAG 2.2.2) */
-.hero-toggle {
-  position: absolute;
-  z-index: 3;
-  top: 96px;
-  right: var(--gutter);
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border: 1px solid rgba(242, 242, 240, 0.35);
-  border-radius: 50%;
-  background: rgba(9, 9, 9, 0.5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  color: var(--text);
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-@media (hover: hover) { .hero-toggle:hover { background: rgba(9, 9, 9, 0.8); } }
 
 .works-carousel { scroll-padding-inline: 20px; overscroll-behavior-x: contain; }
 
@@ -1105,7 +1085,7 @@ main:focus { outline: none; }
 .underline-link:active::after { background: repeating-linear-gradient(90deg, var(--text) 0 12px, transparent 12px 20px); background-size: 20px 1px; animation: road 0.35s linear infinite; }
 }
 
-  .btn:active, .nav-cta:active, .circle-btn:active, .menu-btn:active, .pill-btn:active, .hero-toggle:active { animation: ignite 0.3s linear; }
+  .btn:active, .nav-cta:active, .circle-btn:active, .menu-btn:active, .pill-btn:active { animation: ignite 0.3s linear; }
 }
 @keyframes road { to { background-position: -20px 0; } }
 @keyframes ignite {
@@ -1150,5 +1130,4 @@ main:focus { outline: none; }
   .lb-caption small { display: none; }
   .lb-bottom .circle-btn { width: 44px; height: 44px; }
   .lb-exif { bottom: 10px; }
-  .hero-toggle { top: 88px; }
 }

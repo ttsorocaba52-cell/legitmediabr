@@ -267,14 +267,29 @@ button { font-family: inherit; }
 }
 .man-text .serif { letter-spacing: -0.01em; }
 .man-text .dim { color: var(--muted); }
+/* Pilares empilhados: cada um gruda no topo e o próximo cobre o anterior. */
+.pillars { display: flex; flex-direction: column; }
 .pillar {
+  --cover: 0;
+  position: sticky;
+  top: 96px;
+  height: min(72svh, 680px);
   display: flex;
   flex-wrap: wrap;
+  align-content: center;
   align-items: flex-end;
   justify-content: space-between;
   gap: 20px 48px;
   padding: clamp(28px, 4vw, 48px) 0;
+  background: var(--bg);
   border-top: 1px solid var(--surface);
+  box-shadow: 0 -40px 60px -20px rgba(0, 0, 0, 0.7);
+}
+.pillar > * {
+  opacity: calc(1 - var(--cover) * 0.75);
+  transform: scale(calc(1 - var(--cover) * 0.05));
+  transform-origin: 50% 0;
+  will-change: transform, opacity;
 }
 .pillar-main { display: flex; align-items: flex-start; gap: clamp(16px, 3vw, 40px); flex: 1 1 520px; }
 .pillar:nth-child(2) .pillar-main { padding-left: 8%; }

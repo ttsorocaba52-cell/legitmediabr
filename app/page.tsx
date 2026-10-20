@@ -1,5 +1,6 @@
 import Header from "./components/Header";
 import HeroVideo from "./components/HeroVideo";
+import Pillars from "./components/Pillars";
 import Reveal from "./components/Reveal";
 import Services from "./components/Services";
 import Works from "./components/Works";
@@ -17,12 +18,6 @@ function SectionHead({ label, italic, title, text, xl }: { label: string; italic
     </div>
   );
 }
-
-const PILLARS = [
-  { lead: "nascido da", word: "Ousadia", text: "Exploramos novos ângulos e possibilidades para registrar seu carro de um jeito que você ainda não viu." },
-  { lead: "guiado pela", word: "Exclusividade", text: "Cada pessoa tem sua própria história. Por isso, cada produção carrega uma interpretação artística única." },
-  { lead: "movido pelo", word: "Sonho", text: "Aquela cena que você sempre imaginou do seu carro merece sair da imaginação e se tornar realidade." },
-];
 
 const AUDIENCE = [
   { img: "/assets/p05.webp", pos: "50% 40%", title: "Proprietários & entusiastas", text: "Para quem sabe que um carro pode representar anos de dedicação, uma conquista ou uma fase inesquecível da vida.", chips: ["Ensaio fotográfico", "Filme do carro"] },
@@ -80,20 +75,7 @@ export default function Home() {
               <span className="dim">Nosso olhar transforma essa conexão em imagens feitas para durar.</span>
             </p>
           </div>
-          <div>
-            {PILLARS.map((p, i) => (
-              <div data-reveal="" className="pillar" key={p.word}>
-                <div className="pillar-main">
-                  <span className="pillar-n">0{i + 1}</span>
-                  <span className="pillar-words">
-                    <span className="serif pillar-lead">{p.lead}</span>
-                    <span className="pillar-word">{p.word}</span>
-                  </span>
-                </div>
-                <p>{p.text}</p>
-              </div>
-            ))}
-          </div>
+          <Pillars />
         </div>
       </section>
 

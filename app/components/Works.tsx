@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { INSTAGRAM_URL, WORKS, pad2 } from "../config";
+import WorkVideo from "./WorkVideo";
 
 const N = WORKS.length;
 const wrap = (i: number) => (i + N) % N;
@@ -37,6 +38,7 @@ export default function Works() {
               onClick={() => (on ? setLb(i) : setActive(i))}
             >
               <img className="cover" src={w.img} alt={w.title} style={{ objectPosition: w.pos }} loading="lazy" />
+              {w.video && <WorkVideo src={w.video} pos={w.pos} active={on} />}
               <div className="shade work-shade" />
               <div className="work-title work-fade">
                 <strong>{w.title}</strong>

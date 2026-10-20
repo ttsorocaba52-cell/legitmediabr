@@ -15,10 +15,12 @@ export type Work = {
   car: string;
   loc: string;
   exif: [string, string, string, string];
+  /** Pré-visualização em vídeo ao abrir o painel: caminho sem extensão (.webm e .mp4). */
+  video?: string;
 };
 
 export const WORKS: Work[] = [
-  { img: "/assets/p01.webp", title: "Golf Vermelho", meta: "Em movimento", pos: "45% 50%", car: "VW Golf", loc: "Rodovia", exif: ["35mm", "f/4", "1/60", "100"] },
+  { img: "/assets/p01.webp", title: "Golf Vermelho", meta: "Em movimento", pos: "45% 50%", car: "VW Golf", loc: "Rodovia", exif: ["35mm", "f/4", "1/60", "100"], video: "/assets/golf-vermelho" },
   { img: "/assets/p09.webp", title: "Golf na Represa", meta: "Fotografia", pos: "50% 55%", car: "VW Golf", loc: "Represa", exif: ["85mm", "f/1.8", "1/500", "200"] },
   { img: "/assets/p13.webp", title: "Ferrari 296", meta: "Filme", pos: "55% 60%", car: "Ferrari 296", loc: "Pista", exif: ["50mm", "f/5.6", "1/50", "100"] },
   { img: "/assets/p11.webp", title: "Painel", meta: "Detalhe", pos: "50% 50%", car: "Ferrari", loc: "Estúdio", exif: ["24mm", "f/2", "1/125", "1600"] },

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { INSTAGRAM_URL, WORKS, pad2 } from "../config";
+import Arrow, { withArrow } from "./Arrow";
 import WorkVideo from "./WorkVideo";
 
 const N = WORKS.length;
@@ -79,12 +80,12 @@ export default function Works() {
 
       <div data-reveal="" className="wrap works-controls">
         <div className="arrows desktop-only">
-          <button className="circle-btn" onClick={() => setActive(wrap(active - 1))} aria-label="Projeto anterior">←</button>
-          <button className="circle-btn" onClick={() => setActive(wrap(active + 1))} aria-label="Próximo projeto">→</button>
+          <button className="circle-btn" onClick={() => setActive(wrap(active - 1))} aria-label="Projeto anterior"><Arrow glyph="←" /></button>
+          <button className="circle-btn" onClick={() => setActive(wrap(active + 1))} aria-label="Próximo projeto"><Arrow glyph="→" /></button>
           <span className="counter">{pad2(active + 1)} / {pad2(N)}</span>
         </div>
         <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="underline-link">
-          Explorar todos os projetos ↗
+          {withArrow("Explorar todos os projetos ↗")}
         </a>
       </div>
 
@@ -118,12 +119,12 @@ export default function Works() {
             </div>
           </div>
           <div className="lb-bottom">
-            <button className="circle-btn" onClick={(e) => { e.stopPropagation(); setLb(wrap(lb - 1)); }} aria-label="Anterior">←</button>
+            <button className="circle-btn" onClick={(e) => { e.stopPropagation(); setLb(wrap(lb - 1)); }} aria-label="Anterior"><Arrow glyph="←" /></button>
             <div className="lb-caption">
               <strong>{cur.title}</strong>
               <small>{cur.meta}</small>
             </div>
-            <button className="circle-btn" onClick={(e) => { e.stopPropagation(); setLb(wrap(lb + 1)); }} aria-label="Próximo">→</button>
+            <button className="circle-btn" onClick={(e) => { e.stopPropagation(); setLb(wrap(lb + 1)); }} aria-label="Próximo"><Arrow glyph="→" /></button>
           </div>
         </div>
       )}

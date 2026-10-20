@@ -1,4 +1,5 @@
 import Header from "./components/Header";
+import Btn from "./components/Btn";
 import HeroVideo from "./components/HeroVideo";
 import Pillars from "./components/Pillars";
 import Reveal from "./components/Reveal";
@@ -59,8 +60,8 @@ export default function Home() {
               Seu carro carrega conquistas, momentos e histórias que só você conhece. A gente transforma essa conexão
               em fotografias e filmes para você reviver sempre que quiser.
             </p>
-            <a data-reveal="" href="#vitrine" className="btn btn-primary">Explorar projetos ↓</a>
-            <a data-reveal="" href={DIRECT_URL} {...ext} className="btn btn-secondary strong">Quero registrar meu carro ↗</a>
+            <Btn reveal href="#vitrine">Explorar projetos ↓</Btn>
+            <Btn reveal external strong variant="secondary" href={DIRECT_URL}>Quero registrar meu carro ↗</Btn>
           </div>
         </div>
       </section>
@@ -146,9 +147,7 @@ export default function Home() {
               </ul>
               <div className="format-foot">
                 <small>Valor sob consulta</small>
-                <a href={DIRECT_URL} {...ext} className={`btn ${f.featured ? "btn-primary" : "btn-secondary"}`}>
-                  Conversar sobre meu projeto ↗
-                </a>
+                <Btn external variant={f.featured ? "primary" : "secondary"} href={DIRECT_URL}>Conversar sobre meu projeto ↗</Btn>
               </div>
             </article>
           ))}
@@ -167,8 +166,8 @@ export default function Home() {
           ))}
         </div>
         <div data-reveal="" className="btn-row center-row">
-          <a href={DIRECT_URL} {...ext} className="btn btn-primary">Começar pelo Direct ↗</a>
-          <a href="#vitrine" className="btn btn-secondary">Ver projetos</a>
+          <Btn external href={DIRECT_URL}>Começar pelo Direct ↗</Btn>
+          <Btn variant="secondary" href="#vitrine">Ver projetos</Btn>
         </div>
       </section>
 
@@ -205,8 +204,8 @@ export default function Home() {
           <div data-reveal="" className="contact-foot">
             <p>Seu carro faz parte da sua vida. Vamos criar uma recordação à altura do que ele representa para você?</p>
             <div className="btn-row">
-              <a href={DIRECT_URL} {...ext} className="btn btn-primary">Quero registrar minha história ↗</a>
-              <a href="#formatos" className="btn btn-secondary strong">Conhecer os formatos</a>
+              <Btn external href={DIRECT_URL}>Quero registrar minha história ↗</Btn>
+              <Btn strong variant="secondary" href="#formatos">Conhecer os formatos</Btn>
             </div>
           </div>
         </div>

@@ -63,9 +63,9 @@ button { font-family: inherit; }
 .btn-primary:hover { transform: translateY(-2px); color: var(--bg); }
 .btn-secondary {
   border: 1px solid rgba(242, 242, 240, var(--bd, 0.35));
-  transition: background 0.3s ease, color 0.3s ease;
+  transition: color 0.15s ease 0.27s, border-color 0.3s ease;
 }
-.btn-secondary:hover { background: var(--text); color: var(--bg); }
+.btn-secondary:hover { color: var(--bg); border-color: var(--text); }
 .btn-secondary.strong { --bd: 0.4; }
 .btn-row { display: flex; gap: 14px; flex-wrap: wrap; }
 
@@ -152,9 +152,9 @@ button { font-family: inherit; }
   padding: 12px 20px;
   border: 1px solid rgba(242, 242, 240, 0.35);
   border-radius: 999px;
-  transition: background 0.3s ease, color 0.3s ease;
+  transition: color 0.15s ease 0.27s;
 }
-.nav-cta:hover { background: var(--text); color: var(--bg); }
+.nav-cta:hover { color: var(--bg); }
 .menu-btn {
   display: none;
   height: 44px;
@@ -485,9 +485,11 @@ button { font-family: inherit; }
   color: var(--text);
   font-size: 16px;
   cursor: pointer;
-  transition: background 0.3s ease, color 0.3s ease;
+  display: grid;
+  place-items: center;
+  transition: color 0.15s ease 0.27s;
 }
-.circle-btn:hover { background: var(--text); color: var(--bg); }
+.circle-btn:hover { color: var(--bg); }
 .counter { font-size: 12px; letter-spacing: 0.16em; color: var(--muted); }
 .underline-link {
   display: flex;
@@ -498,7 +500,6 @@ button { font-family: inherit; }
   letter-spacing: 0.18em;
   text-transform: uppercase;
   padding-bottom: 6px;
-  border-bottom: 1px solid var(--text);
 }
 
 /* ---------- Lightbox ---------- */
@@ -827,4 +828,107 @@ button { font-family: inherit; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+}
+
+/* ================= Interações dos botões (tema automotivo) =================
+   1. Brilho de pintura: um reflexo atravessa o botão principal, como a luz
+      passando pelo verniz do carro.
+   2. Faixa de corrida: nos botões secundários, uma faixa inclinada dourada
+      abre caminho e o preenchimento claro vem logo atrás.
+   3. Seta em velocidade: a seta sai na direção em que aponta e outra entra.
+   4. Ignição: ao clicar, o botão trepida como um motor pegando.
+   5. Faixa de estrada: o link sublinhado vira a linha tracejada da pista. */
+.btn, .nav-cta, .circle-btn { position: relative; overflow: hidden; isolation: isolate; }
+.btn > *, .nav-cta > *, .circle-btn > * { position: relative; z-index: 1; }
+
+.fx-arrow {
+  position: relative;
+  display: inline-block;
+  width: 1.15em;
+  height: 1.2em;
+  overflow: hidden;
+  line-height: 1.2;
+  text-align: center;
+  flex: none;
+}
+.fx-arrow > span { display: block; }
+.fx-arrow::after {
+  content: attr(data-a);
+  position: absolute;
+  inset: 0;
+  transform: translate(calc(var(--ax) * -160%), calc(var(--ay) * -160%));
+}
+
+/* faixa de corrida (secundário, seta do nav e círculos) */
+.btn-secondary::before, .btn-secondary::after,
+.nav-cta::before, .nav-cta::after,
+.circle-btn::before, .circle-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(0 0, 0 0, -28px 100%, 0 100%);
+  pointer-events: none;
+}
+.btn-secondary::before, .nav-cta::before, .circle-btn::before { background: var(--text); z-index: -1; }
+.btn-secondary::after, .nav-cta::after, .circle-btn::after { background: var(--accent); z-index: -2; }
+
+/* brilho de pintura (primário) */
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 32%, oklch(0.8 0.11 85 / 0.55) 46%, rgba(255, 255, 255, 0.95) 51%, transparent 62%);
+  transform: translateX(-130%);
+}
+
+/* faixa de estrada (link sublinhado) */
+.underline-link { position: relative; }
+.underline-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--text);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .btn-secondary::before, .nav-cta::before, .circle-btn::before { transition: clip-path 0.55s cubic-bezier(0.6, 0, 0.2, 1) 0.07s; }
+  .btn-secondary::after, .nav-cta::after, .circle-btn::after { transition: clip-path 0.45s cubic-bezier(0.6, 0, 0.2, 1); }
+  .btn-secondary:hover::before, .btn-secondary:hover::after,
+  .nav-cta:hover::before, .nav-cta:hover::after,
+  .circle-btn:hover::before, .circle-btn:hover::after {
+    clip-path: polygon(0 0, calc(100% + 28px) 0, 100% 100%, 0 100%);
+  }
+
+  .btn-primary:hover::before { transform: translateX(130%); transition: transform 0.8s cubic-bezier(0.3, 0.6, 0.2, 1); }
+
+  .fx-arrow > span, .fx-arrow::after { transition: transform 0.5s cubic-bezier(0.7, 0, 0.2, 1); }
+  :is(.btn, .nav-cta, .circle-btn, .underline-link):hover .fx-arrow > span {
+    transform: translate(calc(var(--ax) * 160%), calc(var(--ay) * 160%));
+  }
+  :is(.btn, .nav-cta, .circle-btn, .underline-link):hover .fx-arrow::after { transform: none; transition-delay: 0.08s; }
+  :is(.btn, .nav-cta, .circle-btn, .underline-link):not(:hover) .fx-arrow > span,
+  :is(.btn, .nav-cta, .circle-btn, .underline-link):not(:hover) .fx-arrow::after { transition-duration: 0.01s; }
+
+  .underline-link:hover::after {
+    background: repeating-linear-gradient(90deg, var(--text) 0 12px, transparent 12px 20px);
+    background-size: 20px 1px;
+    animation: road 0.35s linear infinite;
+  }
+
+  .btn:active, .nav-cta:active, .circle-btn:active, .menu-btn:active, .pill-btn:active { animation: ignite 0.3s linear; }
+}
+@keyframes road { to { background-position: -20px 0; } }
+@keyframes ignite {
+  0%   { transform: scale(1); }
+  15%  { transform: scale(0.96) translate(1.5px, 0); }
+  30%  { transform: scale(0.97) translate(-1.5px, 1px); }
+  45%  { transform: scale(0.96) translate(1.5px, -1px); }
+  60%  { transform: scale(0.97) translate(-1px, 0); }
+  80%  { transform: scale(0.98) translate(1px, 1px); }
+  100% { transform: scale(1); }
 }

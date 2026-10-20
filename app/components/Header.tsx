@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { withArrow } from "./Arrow";
 
 const LINKS = [
   ["Projetos", "#vitrine"],
@@ -35,7 +36,7 @@ export default function Header() {
             {LINKS.map(([label, href]) => (
               <a key={href} href={href}>{label}</a>
             ))}
-            <a href="#contato" className="nav-cta">Orçamento ↗</a>
+            <a href="#contato" className="nav-cta">{withArrow("Orçamento ↗")}</a>
           </nav>
           <button className="menu-btn" onClick={() => setMenuOpen((o) => !o)} aria-expanded={menuOpen}>
             {menuOpen ? "Fechar" : "Menu"}

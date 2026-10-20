@@ -45,6 +45,7 @@ export default function Home() {
       <Header />
       <Reveal />
 
+      <main id="conteudo" tabIndex={-1}>
       <section id="top" className="hero">
         <HeroVideo />
         <div className="shade hero-shade-v" />
@@ -100,8 +101,8 @@ export default function Home() {
                 <img src={a.img} alt={a.title} style={{ objectPosition: a.pos }} loading="lazy" />
               </div>
               <div className="aud-title">
-                <span className="num accent">0{i + 1}</span>
-                <strong>{a.title}</strong>
+                <span className="num accent" aria-hidden="true">0{i + 1}</span>
+                <h3>{a.title}</h3>
               </div>
               <p className="body-15">{a.text}</p>
               <div className="chips">
@@ -159,8 +160,8 @@ export default function Home() {
         <div className="wrap steps">
           {STEPS.map((s, i) => (
             <div data-reveal="" className="step" key={s.title}>
-              <span className="step-n">0{i + 1}</span>
-              <strong>{s.title}</strong>
+              <span className="step-n" data-n={`0${i + 1}`} aria-hidden="true" />
+              <h3>{s.title}</h3>
               <p className="body-15">{s.text}</p>
             </div>
           ))}
@@ -210,18 +211,19 @@ export default function Home() {
           </div>
         </div>
       </section>
+      </main>
 
       <footer className="footer">
         <div className="wrap">
           <div className="logo"><span>LEGIT</span><span>MEDIA</span></div>
-          <nav>
+          <nav aria-label="Rodapé">
             <a href="#vitrine">Projetos</a>
             <a href="#servicos">Serviços</a>
             <a href="#sobre">Sobre</a>
             <a href="#contato">Contato</a>
           </nav>
-          <nav>
-            <a href={INSTAGRAM_URL} {...ext}>Instagram</a>
+          <nav aria-label="Redes sociais">
+            <a href={INSTAGRAM_URL} {...ext}>Instagram<span className="sr-only"> (abre em nova aba)</span></a>
             <a href={YOUTUBE_URL}>YouTube</a>
             <a href={VIMEO_URL}>Vimeo</a>
           </nav>

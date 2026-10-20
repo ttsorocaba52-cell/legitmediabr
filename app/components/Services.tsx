@@ -12,13 +12,16 @@ export default function Services() {
         {SERVICES.map((s, i) => (
           <article
             key={s.title}
+            tabIndex={0}
+            aria-label={s.title}
             className={`svc${i === active ? " is-on" : ""}`}
-            onMouseEnter={() => setActive(i)}
+            onPointerEnter={(e) => e.pointerType === "mouse" && setActive(i)}
+            onFocus={(e) => e.currentTarget.matches(":focus-visible") && setActive(i)}
             onClick={() => setActive(i)}
           >
-            <img className="cover" src={s.img} alt={s.title} loading="lazy" />
+            <img className="cover" src={s.img} alt="" loading="lazy" />
             <div className="shade" />
-            <span className="svc-n">0{i + 1}</span>
+            <span className="svc-n" aria-hidden="true">0{i + 1}</span>
             <div className="svc-body">
               <span className="svc-title">{s.title}</span>
               <p className="svc-desc">{s.desc}</p>
@@ -29,11 +32,11 @@ export default function Services() {
       <div className="wrap cards3 svc-grid">
         {SERVICES.map((s, i) => (
           <article key={s.title} className="svc-card">
-            <img className="cover" src={s.img} alt={s.title} loading="lazy" />
+            <img className="cover" src={s.img} alt="" loading="lazy" />
             <div className="shade" />
             <div className="svc-card-body">
-              <span className="num accent">0{i + 1}</span>
-              <strong>{s.title}</strong>
+              <span className="num accent" aria-hidden="true">0{i + 1}</span>
+              <h3>{s.title}</h3>
               <p>{s.desc}</p>
             </div>
           </article>

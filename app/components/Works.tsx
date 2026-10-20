@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { INSTAGRAM_URL, WORKS, pad2 } from "../config";
 import Arrow, { withArrow } from "./Arrow";
 import WorkVideo from "./WorkVideo";
@@ -9,44 +9,48 @@ const N = WORKS.length;
 const wrap = (i: number) => (i + N) % N;
 const EXIF_KEYS = ["Lente", "Abertura", "Obtur.", "ISO"];
 
+// Enter e Espaço ativam elementos que não são <button> (role="button").
+const onActivate = (fn: () => void) => (e: React.KeyboardEvent) => {
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    fn();
+  }
+};
+
 export default function Works() {
   const [active, setActive] = useState(2);
   const [lb, setLb] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (lb === null) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setLb(null);
-      if (e.key === "ArrowRight") setLb((i) => (i === null ? i : wrap(i + 1)));
-      if (e.key === "ArrowLeft") setLb((i) => (i === null ? i : wrap(i - 1)));
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [lb]);
-
-  const cur = lb === null ? null : WORKS[lb];
-
   return (
     <>
-      <div data-reveal="" className="works-accordion desktop-only">
+      {/* Desktop e tablet: acordeão. Mouse abre ao passar; teclado abre ao focar;
+          toque: 1º toque abre, 2º toque amplia (por isso só o mouse usa pointerenter). */}
+      <div data-reveal="" className="works-accordion desktop-only" role="group" aria-label="Projetos selecionados">
         {WORKS.map((w, i) => {
           const on = i === active;
+          const open = () => (on ? setLb(i) : setActive(i));
           return (
-            <article
+            <div
               key={w.title}
+              role="button"
+              tabIndex={0}
+              aria-expanded={on}
               className={`work${on ? " is-on" : ""}`}
-              onMouseEnter={() => setActive(i)}
-              onClick={() => (on ? setLb(i) : setActive(i))}
+              onPointerEnter={(e) => e.pointerType === "mouse" && setActive(i)}
+              onFocus={(e) => e.currentTarget.matches(":focus-visible") && setActive(i)}
+              onClick={open}
+              onKeyDown={onActivate(open)}
             >
-              <img className="cover" src={w.img} alt={w.title} style={{ objectPosition: w.pos }} loading="lazy" />
+              <img className="cover" src={w.img} alt="" style={{ objectPosition: w.pos }} loading="lazy" />
               {w.video && <WorkVideo src={w.video} pos={w.pos} active={on} />}
               <div className="shade work-shade" />
               <div className="work-title work-fade">
                 <strong>{w.title}</strong>
-                <span>Ver projeto →</span>
+                <span className="sr-only">, {w.car}, {w.loc}.</span>
+                <span>Ver projeto <i aria-hidden="true">→</i></span>
               </div>
-              <div className="work-num">{pad2(i + 1)}</div>
-              <div className="spec work-fade">
+              <div className="work-num" aria-hidden="true">{pad2(i + 1)}</div>
+              <div className="spec work-fade" aria-hidden="true">
                 <div className="spec-head">
                   <span>Ficha {pad2(i + 1)}</span>
                   <i />
@@ -60,21 +64,29 @@ export default function Works() {
               <span className="corner tl" />
               <span className="corner tr" />
               <span className="corner br" />
-            </article>
+            </div>
           );
         })}
       </div>
 
-      <div className="works-carousel mobile-only">
+      {/* Celular: carrossel com rolagem por toque; os cartões também recebem foco. */}
+      <div className="works-carousel mobile-only" role="group" aria-label="Projetos selecionados">
         {WORKS.map((w, i) => (
-          <article key={w.title} className="work-card" onClick={() => setLb(i)}>
-            <img className="cover" src={w.img} alt={w.title} style={{ objectPosition: w.pos }} loading="lazy" />
+          <div
+            key={w.title}
+            role="button"
+            tabIndex={0}
+            className="work-card"
+            onClick={() => setLb(i)}
+            onKeyDown={onActivate(() => setLb(i))}
+          >
+            <img className="cover" src={w.img} alt="" style={{ objectPosition: w.pos }} loading="lazy" />
             <div className="shade" />
             <div className="work-card-text">
-              <small>{pad2(i + 1)} · {w.meta} · {w.loc}</small>
               <strong>{w.title}</strong>
+              <small>{pad2(i + 1)} · {w.meta} · {w.loc}</small>
             </div>
-          </article>
+          </div>
         ))}
       </div>
 
@@ -82,52 +94,90 @@ export default function Works() {
         <div className="arrows desktop-only">
           <button className="circle-btn" onClick={() => setActive(wrap(active - 1))} aria-label="Projeto anterior"><Arrow glyph="←" /></button>
           <button className="circle-btn" onClick={() => setActive(wrap(active + 1))} aria-label="Próximo projeto"><Arrow glyph="→" /></button>
-          <span className="counter">{pad2(active + 1)} / {pad2(N)}</span>
+          <span className="counter" aria-live="polite">{pad2(active + 1)} / {pad2(N)}</span>
         </div>
         <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="underline-link">
           {withArrow("Explorar todos os projetos ↗")}
+          <span className="sr-only"> (abre em nova aba)</span>
         </a>
       </div>
 
-      {cur && lb !== null && (
-        <div className="lightbox" onClick={() => setLb(null)} role="dialog" aria-modal="true" aria-label={cur.title}>
-          <div className="lb-top">
-            <span>{pad2(lb + 1)} / {pad2(N)}</span>
-            <button className="pill-btn" onClick={() => setLb(null)}>Fechar ✕</button>
-          </div>
-          <div className="lb-stage">
-            <div className="lb-frame" onClick={(e) => e.stopPropagation()}>
-              <img src={cur.img} alt={cur.title} />
-              <div className="lb-hud">
-                <span className="third v1" />
-                <span className="third v2" />
-                <span className="third h1" />
-                <span className="third h2" />
-                <span className="lb-center" />
-                <span className="lb-corner tl" />
-                <span className="lb-corner tr" />
-                <span className="lb-corner bl" />
-                <span className="lb-corner br" />
-                <div className="lb-tag left"><i />Modo foto</div>
-                <div className="lb-tag right">{cur.car} · {cur.loc}</div>
-                <div className="lb-exif">
-                  {EXIF_KEYS.map((k, j) => (
-                    <span key={k}><em>{k}</em>{cur.exif[j]}</span>
-                  ))}
-                </div>
-              </div>
+      {lb !== null && <Lightbox index={lb} onIndex={setLb} onClose={() => setLb(null)} />}
+    </>
+  );
+}
+
+// "Modo foto": foco vai para o botão Fechar, Tab fica preso no diálogo, Esc
+// fecha, ←/→ navegam e o foco volta para o painel de origem ao fechar.
+function Lightbox({ index, onIndex, onClose }: { index: number; onIndex: (i: number) => void; onClose: () => void }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const cur = WORKS[index];
+
+  useEffect(() => {
+    const prev = document.activeElement as HTMLElement | null;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeRef.current?.focus();
+    return () => {
+      document.body.style.overflow = overflow;
+      prev?.focus?.();
+    };
+  }, []);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      else if (e.key === "ArrowRight") onIndex(wrap(index + 1));
+      else if (e.key === "ArrowLeft") onIndex(wrap(index - 1));
+      else if (e.key === "Tab" && ref.current) {
+        const f = ref.current.querySelectorAll<HTMLElement>("button");
+        const first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [index, onIndex, onClose]);
+
+  return (
+    <div ref={ref} className="lightbox" onClick={onClose} role="dialog" aria-modal="true" aria-label={`${cur.title}, ${cur.car}, ${cur.loc}`}>
+      <div className="lb-top">
+        <span aria-live="polite">{pad2(index + 1)} / {pad2(N)}</span>
+        <button ref={closeRef} className="pill-btn" onClick={onClose}>Fechar <span aria-hidden="true">✕</span></button>
+      </div>
+      <div className="lb-stage">
+        <div className="lb-frame" onClick={(e) => e.stopPropagation()}>
+          <img src={cur.img} alt={`${cur.title}: ${cur.car}, ${cur.loc}`} />
+          <div className="lb-hud" aria-hidden="true">
+            <span className="third v1" />
+            <span className="third v2" />
+            <span className="third h1" />
+            <span className="third h2" />
+            <span className="lb-center" />
+            <span className="lb-corner tl" />
+            <span className="lb-corner tr" />
+            <span className="lb-corner bl" />
+            <span className="lb-corner br" />
+            <div className="lb-tag left"><i />Modo foto</div>
+            <div className="lb-tag right">{cur.car} · {cur.loc}</div>
+            <div className="lb-exif">
+              {EXIF_KEYS.map((k, j) => (
+                <span key={k}><em>{k}</em>{cur.exif[j]}</span>
+              ))}
             </div>
-          </div>
-          <div className="lb-bottom">
-            <button className="circle-btn" onClick={(e) => { e.stopPropagation(); setLb(wrap(lb - 1)); }} aria-label="Anterior"><Arrow glyph="←" /></button>
-            <div className="lb-caption">
-              <strong>{cur.title}</strong>
-              <small>{cur.meta}</small>
-            </div>
-            <button className="circle-btn" onClick={(e) => { e.stopPropagation(); setLb(wrap(lb + 1)); }} aria-label="Próximo"><Arrow glyph="→" /></button>
           </div>
         </div>
-      )}
-    </>
+      </div>
+      <div className="lb-bottom">
+        <button className="circle-btn" onClick={(e) => { e.stopPropagation(); onIndex(wrap(index - 1)); }} aria-label="Projeto anterior"><Arrow glyph="←" /></button>
+        <div className="lb-caption">
+          <strong>{cur.title}</strong>
+          <small>{cur.meta}</small>
+        </div>
+        <button className="circle-btn" onClick={(e) => { e.stopPropagation(); onIndex(wrap(index + 1)); }} aria-label="Próximo projeto"><Arrow glyph="→" /></button>
+      </div>
+    </div>
   );
 }

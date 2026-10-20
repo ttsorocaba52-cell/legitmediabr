@@ -1,10 +1,18 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Legit Media — Filme e fotografia automotiva",
   description:
     "Fotografias e filmes do seu carro por Felipe Xavier. Cada história, uma perspectiva. Fale com a gente pelo Direct.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover", // usa a tela toda em celulares com notch
+  themeColor: "#090909",
+  colorScheme: "dark",
 };
 
 // Marca o <html> antes da pintura para o reveal-on-scroll esconder os
@@ -24,7 +32,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <script dangerouslySetInnerHTML={{ __html: revealBoot }} />
       </head>
-      <body>{children}</body>
+      <body>
+        <a href="#conteudo" className="skip-link">Pular para o conteúdo</a>
+        {children}
+      </body>
     </html>
   );
 }

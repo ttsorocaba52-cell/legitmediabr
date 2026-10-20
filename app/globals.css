@@ -273,14 +273,17 @@ button { font-family: inherit; }
   --cover: 0;
   position: sticky;
   top: 96px;
-  height: min(72svh, 680px);
+  /* Altura = título + respiro em cima e embaixo (todos iguais, para o próximo cobrir o anterior). */
+  --pad: clamp(40px, 6vw, 88px);
+  /* + a segunda linha: em "Exclusividade" o parágrafo desce para baixo do título. */
+  height: calc(clamp(26px, 3vw, 48px) + clamp(52px, 9vw, 148px) * 0.86 + 20px + 3 * 25.6px + var(--pad) * 2);
   display: flex;
   flex-wrap: wrap;
   align-content: center;
   align-items: flex-end;
   justify-content: space-between;
   gap: 20px 48px;
-  padding: clamp(28px, 4vw, 48px) 0;
+  padding: var(--pad) 0;
   background: var(--bg);
   border-top: 1px solid var(--surface);
   box-shadow: 0 -40px 60px -20px rgba(0, 0, 0, 0.7);
@@ -806,6 +809,7 @@ button { font-family: inherit; }
   .pillar:nth-child(2) .pillar-main, .pillar:nth-child(3) .pillar-main { padding-left: 0; }
   /* No celular o texto ocupa a largura toda: escurece o vídeo por inteiro. */
   .hero-shade-h { background: rgba(9, 9, 9, 0.4); }
+  .pillar { height: calc(26px + 52px * 0.86 + 20px + 4 * 25.6px + var(--pad) * 2); }
   /* "EXCLUSIVIDADE" não cabe a 52px em telas estreitas */
   .pillar-word { font-size: min(52px, 11.4vw); }
   .contact { min-height: 88svh; }

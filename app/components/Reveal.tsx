@@ -49,13 +49,6 @@ export default function Reveal() {
       };
     };
 
-    // Com a abertura na tela, o reveal do topo espera ela terminar (senão o texto
-    // entra escondido atrás dela). Se a abertura falhar, arma sozinho em 7 s.
-    if (root.classList.contains("intro-on")) {
-      const fallback = setTimeout(arm, 7000);
-      window.addEventListener("intro-done", arm, { once: true });
-      return () => { clearTimeout(fallback); window.removeEventListener("intro-done", arm); cleanup(); };
-    }
     arm();
     return () => cleanup();
   }, []);

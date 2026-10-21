@@ -9,6 +9,8 @@ export const POST_URL = "https://www.instagram.com/p/DeaWpLQR_3L/";
 export const POST_GOLF_AZUL_URL = "https://www.instagram.com/p/Dd_SsThR1cC/";
 // Post do Instagram da Ferrari (Ferrari 296 e Painel).
 export const POST_FERRARI_URL = "https://www.instagram.com/p/Dd2bt1BxV8u/";
+// Post do Instagram da Lamborghini.
+export const POST_LAMBO_URL = "https://www.instagram.com/p/Ddoz-xJxxEL/";
 export const INSTAGRAM_URL = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
 export const YOUTUBE_URL = "#";
 export const VIMEO_URL = "#";
@@ -33,7 +35,7 @@ export const WORKS: Work[] = [
   { img: "/assets/p13.webp", title: "Ferrari 296", meta: "Filme", pos: "55% 60%", car: "Ferrari 296", loc: "Pista", exif: ["50mm", "f/5.6", "1/50", "100"], video: "/assets/ferrari", url: POST_FERRARI_URL },
   { img: "/assets/p11.webp", title: "Painel", meta: "Detalhe", pos: "50% 50%", car: "Ferrari", loc: "Estúdio", exif: ["24mm", "f/2", "1/125", "1600"], video: "/assets/painel", url: POST_FERRARI_URL },
   { img: "/assets/p04.webp", title: "Comboio", meta: "Evento", pos: "30% 50%", car: "VW Polo GTS", loc: "Rodovia", exif: ["35mm", "f/4", "1/60", "100"], video: "/assets/polo-gts", url: POST_URL },
-  { img: "/assets/p12.webp", title: "Lamborghini", meta: "Em movimento", pos: "35% 50%", car: "Lamborghini", loc: "Avenida", exif: ["24mm", "f/5", "1/50", "200"], video: "/assets/lamborghini" },
+  { img: "/assets/p12.webp", title: "Lamborghini", meta: "Em movimento", pos: "35% 50%", car: "Lamborghini", loc: "Avenida", exif: ["24mm", "f/5", "1/50", "200"], video: "/assets/lamborghini", url: POST_LAMBO_URL },
   { img: "/assets/p02.webp", title: "Astra", meta: "Em movimento", pos: "50% 55%", car: "Chevrolet Astra", loc: "Rodovia", exif: ["35mm", "f/4", "1/60", "100"], video: "/assets/astra", url: POST_URL },
 ];
 

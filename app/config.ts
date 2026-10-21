@@ -7,6 +7,8 @@ export const DIRECT_URL = `https://ig.me/m/${INSTAGRAM_HANDLE}`;
 export const POST_URL = "https://www.instagram.com/p/DeaWpLQR_3L/";
 // Post do Instagram do Golf na Represa (Golf azul).
 export const POST_GOLF_AZUL_URL = "https://www.instagram.com/p/Dd_SsThR1cC/";
+// Post do Instagram da Ferrari (Ferrari 296 e Painel).
+export const POST_FERRARI_URL = "https://www.instagram.com/p/Dd2bt1BxV8u/";
 export const INSTAGRAM_URL = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
 export const YOUTUBE_URL = "#";
 export const VIMEO_URL = "#";
@@ -28,8 +30,8 @@ export type Work = {
 export const WORKS: Work[] = [
   { img: "/assets/p01.webp", title: "Golf Vermelho", meta: "Em movimento", pos: "45% 50%", car: "VW Golf", loc: "Rodovia", exif: ["35mm", "f/4", "1/60", "100"], video: "/assets/golf-vermelho", url: POST_URL },
   { img: "/assets/p09.webp", title: "Golf na Represa", meta: "Fotografia", pos: "50% 55%", car: "VW Golf", loc: "Represa", exif: ["85mm", "f/1.8", "1/500", "200"], video: "/assets/golf-azul", url: POST_GOLF_AZUL_URL },
-  { img: "/assets/p13.webp", title: "Ferrari 296", meta: "Filme", pos: "55% 60%", car: "Ferrari 296", loc: "Pista", exif: ["50mm", "f/5.6", "1/50", "100"], video: "/assets/ferrari" },
-  { img: "/assets/p11.webp", title: "Painel", meta: "Detalhe", pos: "50% 50%", car: "Ferrari", loc: "Estúdio", exif: ["24mm", "f/2", "1/125", "1600"], video: "/assets/painel" },
+  { img: "/assets/p13.webp", title: "Ferrari 296", meta: "Filme", pos: "55% 60%", car: "Ferrari 296", loc: "Pista", exif: ["50mm", "f/5.6", "1/50", "100"], video: "/assets/ferrari", url: POST_FERRARI_URL },
+  { img: "/assets/p11.webp", title: "Painel", meta: "Detalhe", pos: "50% 50%", car: "Ferrari", loc: "Estúdio", exif: ["24mm", "f/2", "1/125", "1600"], video: "/assets/painel", url: POST_FERRARI_URL },
   { img: "/assets/p04.webp", title: "Comboio", meta: "Evento", pos: "30% 50%", car: "VW Polo GTS", loc: "Rodovia", exif: ["35mm", "f/4", "1/60", "100"], video: "/assets/polo-gts", url: POST_URL },
   { img: "/assets/p12.webp", title: "Lamborghini", meta: "Em movimento", pos: "35% 50%", car: "Lamborghini", loc: "Avenida", exif: ["24mm", "f/5", "1/50", "200"], video: "/assets/lamborghini" },
   { img: "/assets/p02.webp", title: "Astra", meta: "Em movimento", pos: "50% 55%", car: "Chevrolet Astra", loc: "Rodovia", exif: ["35mm", "f/4", "1/60", "100"], video: "/assets/astra", url: POST_URL },

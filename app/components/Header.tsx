@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { withArrow } from "./Arrow";
+import Wheel from "./Wheel";
 
 const LINKS = [
   ["Projetos", "#vitrine"],
@@ -57,7 +58,7 @@ export default function Header() {
             {LINKS.map(([label, href]) => (
               <a key={href} href={href}>{label}</a>
             ))}
-            <a href="#contato" className="nav-cta">{withArrow("Orçamento ↗")}</a>
+            <a href="#contato" className="nav-cta"><Wheel />{withArrow("Orçamento ↗")}</a>
           </nav>
           <button ref={btnRef} className="menu-btn" onClick={() => setMenuOpen((o) => !o)} aria-expanded={menuOpen} aria-controls="menu-mobile">
             {menuOpen ? "Fechar" : "Menu"}

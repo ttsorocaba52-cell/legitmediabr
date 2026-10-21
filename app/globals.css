@@ -70,7 +70,7 @@ button { font-family: inherit; }
 .btn-primary { background: var(--text); color: var(--bg); transition: transform 0.4s ease; }
 .btn-secondary {
   border: 1px solid rgba(242, 242, 240, var(--bd, 0.35));
-  transition: color 0.15s ease 0.27s, border-color 0.3s ease;
+  transition: border-color 0.3s ease;
 }
 .btn-secondary.strong { --bd: 0.4; }
 .btn-row { display: flex; gap: 14px; flex-wrap: wrap; }
@@ -159,7 +159,6 @@ button { font-family: inherit; }
   padding: 12px 20px;
   border: 1px solid rgba(242, 242, 240, 0.35);
   border-radius: 999px;
-  transition: color 0.15s ease 0.27s;
 }
 .menu-btn {
   display: none;
@@ -890,10 +889,10 @@ main:focus { outline: none; }
 .works-carousel { scroll-padding-inline: 20px; overscroll-behavior-x: contain; }
 
 /* ================= Interações dos botões (tema automotivo) =================
-   1. Brilho de pintura: um reflexo atravessa o botão principal, como a luz
-      passando pelo verniz do carro.
+   1. Roda de corrida: uma roda de aro de malha atravessa o botão rolando
+      (veja o fim do arquivo).
    2. Faixa de corrida: nos botões secundários, uma faixa inclinada dourada
-      abre caminho e o preenchimento claro vem logo atrás.
+      acompanha a roda e o preenchimento claro vem logo atrás.
    3. Seta em velocidade: a seta sai na direção em que aponta e outra entra.
    4. Ignição: ao clicar, o botão trepida como um motor pegando.
    5. Faixa de estrada: o link sublinhado vira a linha tracejada da pista.
@@ -929,20 +928,11 @@ main:focus { outline: none; }
   inset: 0;
   clip-path: polygon(0 0, 0 0, -28px 100%, 0 100%);
   pointer-events: none;
-  transition: clip-path 0.55s cubic-bezier(0.6, 0, 0.2, 1) 0.07s;
+  transition: clip-path 0.75s cubic-bezier(0.45, 0, 0.25, 1) 0.04s;
 }
 .btn-secondary::before, .nav-cta::before, .circle-btn::before { background: var(--text); z-index: -1; }
-.btn-secondary::after, .nav-cta::after, .circle-btn::after { background: var(--accent); z-index: -2; transition-duration: 0.45s; transition-delay: 0s; }
+.btn-secondary::after, .nav-cta::after, .circle-btn::after { background: var(--accent); z-index: -2; transition-duration: 0.65s; transition-delay: 0s; }
 
-.btn-primary::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: linear-gradient(105deg, transparent 32%, oklch(0.8 0.11 85 / 0.55) 46%, rgba(255, 255, 255, 0.95) 51%, transparent 62%);
-  transform: translateX(-130%);
-}
 
 .underline-link { position: relative; }
 .underline-link::after {
@@ -963,18 +953,10 @@ main:focus { outline: none; }
 .btn-primary:focus-visible, .btn-primary:active { color: var(--bg); }
 }
 @media (hover: hover) {
-.btn-secondary:hover,
-.btn-secondary:focus-visible,
-.nav-cta:hover,
-.nav-cta:focus-visible,
 .circle-btn:hover,
 .circle-btn:focus-visible { color: var(--bg); }
 }
 @media (hover: none) {
-.btn-secondary:focus-visible,
-.btn-secondary:active,
-.nav-cta:focus-visible,
-.nav-cta:active,
 .circle-btn:focus-visible,
 .circle-btn:active { color: var(--bg); }
 }
@@ -1027,14 +1009,6 @@ main:focus { outline: none; }
 @media (hover: none) {
 .btn-primary:focus-visible,
 .btn-primary:active { transform: translateY(-2px); }
-}
-@media (hover: hover) {
-.btn-primary:hover::before,
-.btn-primary:focus-visible::before { transform: translateX(130%); transition: transform 0.8s cubic-bezier(0.3, 0.6, 0.2, 1); }
-}
-@media (hover: none) {
-.btn-primary:focus-visible::before,
-.btn-primary:active::before { transform: translateX(130%); transition: transform 0.8s cubic-bezier(0.3, 0.6, 0.2, 1); }
 }
 @media (hover: hover) {
 .btn:hover .fx-arrow > span,
@@ -1131,3 +1105,46 @@ main:focus { outline: none; }
   .lb-bottom .circle-btn { width: 44px; height: 44px; }
   .lb-exif { bottom: 10px; }
 }
+
+/* ================= Roda de corrida (hover/foco/toque nos botões) =================
+   Uma roda de aro de malha entra pela esquerda, rola até sair pela direita e some.
+   O preenchimento dos botões secundários vai logo atrás dela. */
+.fx-wheel {
+  display: none;
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: -60px;
+  height: min(calc(100% - 8px), 52px);
+  aspect-ratio: 1;
+  translate: 0 -50%;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.45));
+}
+.fx-wheel svg { display: block; width: 100%; height: 100%; }
+.w-tire { fill: #0b0b0c; stroke: #2a2d31; stroke-width: 1; }
+.w-tread { fill: none; stroke: #34373c; stroke-width: 4; stroke-dasharray: 6 4.2; }
+.w-lip { fill: none; stroke: #d4d5d2; stroke-width: 3.2; }
+.w-face { fill: #17191c; }
+.w-spokes line { stroke: #bfc0bd; stroke-width: 1.6; stroke-linecap: round; }
+.w-cap { fill: var(--accent); stroke: #8a6a22; stroke-width: 0.8; }
+.w-lugs circle { fill: #17191c; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .is-rolling > .fx-wheel {
+    display: block;
+    animation: wheel-roll 0.75s cubic-bezier(0.45, 0, 0.25, 1) both;
+  }
+  .is-rolling > .fx-wheel svg { animation: wheel-spin 0.75s cubic-bezier(0.45, 0, 0.25, 1) both; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-wheel { display: none !important; }
+}
+@keyframes wheel-roll { from { left: -60px; } to { left: calc(100% + 12px); } }
+@keyframes wheel-spin { to { rotate: 2.8turn; } }
+
+/* Texto dos botões com preenchimento (secundário e CTA do menu): branco sobre o
+   escuro e escuro sobre o preenchimento claro, ponto a ponto. Assim as letras
+   ficam legíveis durante toda a passada da roda, sem troca brusca de cor. */
+.btn-secondary > .btn-label, .btn-secondary > .fx-arrow,
+.nav-cta > .btn-label, .nav-cta > .fx-arrow { color: #fff; mix-blend-mode: difference; }

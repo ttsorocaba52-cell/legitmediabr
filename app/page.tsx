@@ -1,5 +1,6 @@
 import Header from "./components/Header";
 import Btn from "./components/Btn";
+import ButtonFx from "./components/ButtonFx";
 import HeroVideo from "./components/HeroVideo";
 import Pillars from "./components/Pillars";
 import Reveal from "./components/Reveal";
@@ -44,6 +45,7 @@ export default function Home() {
     <div className="page">
       <Header />
       <Reveal />
+      <ButtonFx />
 
       <main id="conteudo" tabIndex={-1}>
       <section id="top" className="hero">

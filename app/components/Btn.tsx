@@ -1,4 +1,5 @@
 import { withArrow } from "./Arrow";
+import Wheel from "./Wheel";
 
 type Props = {
   href: string;
@@ -18,6 +19,7 @@ export default function Btn({ href, variant = "primary", strong, external, revea
       {...(reveal ? { "data-reveal": "" } : {})}
       {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
     >
+      <Wheel />
       {withArrow(children)}
     </a>
   );

@@ -928,10 +928,10 @@ main:focus { outline: none; }
   inset: 0;
   clip-path: polygon(0 0, 0 0, -28px 100%, 0 100%);
   pointer-events: none;
-  transition: clip-path 0.75s cubic-bezier(0.45, 0, 0.25, 1) 0.04s;
+  transition: clip-path 0.45s cubic-bezier(0.45, 0, 0.25, 1);
 }
 .btn-secondary::before, .nav-cta::before, .circle-btn::before { background: var(--text); z-index: -1; }
-.btn-secondary::after, .nav-cta::after, .circle-btn::after { background: var(--accent); z-index: -2; transition-duration: 0.65s; transition-delay: 0s; }
+.btn-secondary::after, .nav-cta::after, .circle-btn::after { background: var(--accent); z-index: -2; transition-duration: 0.36s; transition-delay: 0s; }
 
 
 .underline-link { position: relative; }
@@ -1011,40 +1011,24 @@ main:focus { outline: none; }
 .btn-primary:active { transform: translateY(-2px); }
 }
 @media (hover: hover) {
-.btn:hover .fx-arrow > span,
-.btn:focus-visible .fx-arrow > span,
-.nav-cta:hover .fx-arrow > span,
-.nav-cta:focus-visible .fx-arrow > span,
 .circle-btn:hover .fx-arrow > span,
 .circle-btn:focus-visible .fx-arrow > span,
 .underline-link:hover .fx-arrow > span,
 .underline-link:focus-visible .fx-arrow > span { transform: translate(calc(var(--ax) * 160%), calc(var(--ay) * 160%)); transition: transform 0.5s cubic-bezier(0.7, 0, 0.2, 1); }
 }
 @media (hover: none) {
-.btn:focus-visible .fx-arrow > span,
-.btn:active .fx-arrow > span,
-.nav-cta:focus-visible .fx-arrow > span,
-.nav-cta:active .fx-arrow > span,
 .circle-btn:focus-visible .fx-arrow > span,
 .circle-btn:active .fx-arrow > span,
 .underline-link:focus-visible .fx-arrow > span,
 .underline-link:active .fx-arrow > span { transform: translate(calc(var(--ax) * 160%), calc(var(--ay) * 160%)); transition: transform 0.5s cubic-bezier(0.7, 0, 0.2, 1); }
 }
 @media (hover: hover) {
-.btn:hover .fx-arrow::after,
-.btn:focus-visible .fx-arrow::after,
-.nav-cta:hover .fx-arrow::after,
-.nav-cta:focus-visible .fx-arrow::after,
 .circle-btn:hover .fx-arrow::after,
 .circle-btn:focus-visible .fx-arrow::after,
 .underline-link:hover .fx-arrow::after,
 .underline-link:focus-visible .fx-arrow::after { transform: none; transition: transform 0.5s cubic-bezier(0.7, 0, 0.2, 1) 0.08s; }
 }
 @media (hover: none) {
-.btn:focus-visible .fx-arrow::after,
-.btn:active .fx-arrow::after,
-.nav-cta:focus-visible .fx-arrow::after,
-.nav-cta:active .fx-arrow::after,
 .circle-btn:focus-visible .fx-arrow::after,
 .circle-btn:active .fx-arrow::after,
 .underline-link:focus-visible .fx-arrow::after,
@@ -1106,45 +1090,16 @@ main:focus { outline: none; }
   .lb-exif { bottom: 10px; }
 }
 
-/* ================= Roda de corrida (hover/foco/toque nos botões) =================
-   Uma roda de aro de malha entra pela esquerda, rola até sair pela direita e some.
-   O preenchimento dos botões secundários vai logo atrás dela. */
-.fx-wheel {
-  display: none;
-  position: absolute;
-  z-index: 2;
-  top: 50%;
-  left: -60px;
-  height: min(calc(100% - 8px), 52px);
-  aspect-ratio: 1;
-  translate: 0 -50%;
-  pointer-events: none;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.45));
-}
-.fx-wheel svg { display: block; width: 100%; height: 100%; }
-.w-tire { fill: #0b0b0c; stroke: #2a2d31; stroke-width: 1; }
-.w-tread { fill: none; stroke: #34373c; stroke-width: 4; stroke-dasharray: 6 4.2; }
-.w-lip { fill: none; stroke: #d4d5d2; stroke-width: 3.2; }
-.w-face { fill: #17191c; }
-.w-spokes line { stroke: #bfc0bd; stroke-width: 1.6; stroke-linecap: round; }
-.w-cap { fill: var(--accent); stroke: #8a6a22; stroke-width: 0.8; }
-.w-lugs circle { fill: #17191c; }
-
-@media (prefers-reduced-motion: no-preference) {
-  .is-rolling > .fx-wheel {
-    display: block;
-    animation: wheel-roll 0.75s cubic-bezier(0.45, 0, 0.25, 1) both;
-  }
-  .is-rolling > .fx-wheel svg { animation: wheel-spin 0.75s cubic-bezier(0.45, 0, 0.25, 1) both; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .fx-wheel { display: none !important; }
-}
-@keyframes wheel-roll { from { left: -60px; } to { left: calc(100% + 12px); } }
-@keyframes wheel-spin { to { rotate: 2.8turn; } }
-
 /* Texto dos botões com preenchimento (secundário e CTA do menu): branco sobre o
    escuro e escuro sobre o preenchimento claro, ponto a ponto. Assim as letras
    ficam legíveis durante toda a passada da roda, sem troca brusca de cor. */
 .btn-secondary > .btn-label, .btn-secondary > .fx-arrow,
 .nav-cta > .btn-label, .nav-cta > .fx-arrow { color: #fff; mix-blend-mode: difference; }
+
+/* ================= Burnout (canvas desenhado por ButtonFx) ================= */
+/* z-index 0: fumaça e roda ficam atrás do texto do botão (que é z-index 1), então as letras continuam legíveis */
+.fx-burn { display: none; position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+.is-burning > .fx-burn { display: block; }
+.fx-arrow > span { transition: opacity 0.12s ease; }
+.is-burning .fx-arrow > span { opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .fx-burn { display: none !important; } }

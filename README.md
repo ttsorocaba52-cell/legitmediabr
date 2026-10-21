@@ -16,6 +16,10 @@ npm run build
 - `app/globals.css`: tokens de cor, tipografia e layout.
 - `public/assets/`: imagens em WebP e o vídeo do hero (`hero.*` 1080p e `hero-720.*` para celular, em WebM e MP4, mais o `hero-poster.webp`).
 
+## Animação dos botões
+
+`app/components/ButtonFx.tsx` é um port da animação "Botão Like Burnout" (protótipo de motion): ao passar o mouse, focar pelo teclado ou tocar, a seta do botão cede lugar a uma roda que afunda, gira no lugar deixando um risco dourado e solta fumaça, treme, dá um tranco e para; depois a seta volta. É desenhada num canvas que só existe durante a animação. Os tempos das cenas ficam em `CUE` no topo do arquivo.
+
 ## Responsivo e acessível
 
 Testado de 320px a 2560px (celular, tablet, celular deitado, monitor grande), com axe-core sem violações.

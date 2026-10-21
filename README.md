@@ -20,6 +20,15 @@ npm run build
 
 `app/components/ButtonFx.tsx` é um port da animação "Botão Like Burnout" (protótipo de motion): ao passar o mouse, focar pelo teclado ou tocar, a seta do botão cede lugar a uma roda que afunda, gira no lugar deixando um risco dourado e solta fumaça, treme, dá um tranco e para; depois a seta volta. É desenhada num canvas que só existe durante a animação. Os tempos das cenas ficam em `CUE` no topo do arquivo.
 
+## Abertura (painel dá a partida)
+
+`app/components/Intro.tsx` é um port da animação "painel-start" (protótipo de motion), comprimida de 7,2 s para ~2 s: o painel se desenha, os ponteiros varrem ao máximo e voltam, as luzes de alerta acendem, aparece "Pronto para partir" e tudo se dissolve no site.
+
+- Só na 1ª visita da sessão; `?intro` na URL força (para testar). Não aparece com movimento reduzido nem economia de dados.
+- Clique, toque ou qualquer tecla pulam. Se o JS falhar, um fallback em CSS tira a tela em ~6 s.
+- Velocidade: constante `K` no topo do arquivo (1 = velocidade do protótipo; 0,45 ≈ 2 s). Cores: objeto `C`.
+- Os ícones (`intro-icons.ts`) são do [Phosphor](https://phosphoricons.com) (MIT).
+
 ## Responsivo e acessível
 
 Testado de 320px a 2560px (celular, tablet, celular deitado, monitor grande), com axe-core sem violações.

@@ -1118,3 +1118,11 @@ main:focus { outline: none; }
   font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text);
 }
 .lb-link { margin-top: 4px; font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); border-bottom: 1px solid currentColor; padding-bottom: 2px; }
+
+/* ================= Abertura (painel dá a partida) ================= */
+.intro { display: none; position: fixed; inset: 0; z-index: 200; overflow: hidden; background: radial-gradient(110% 90% at 50% 50%, #16171a 0%, #0b0b0c 75%); }
+.intro-stage { position: absolute; left: 50%; top: 50%; transform-origin: center center; will-change: transform; }
+/* classe definida antes da pintura (layout.tsx): a tela escura já está no 1º quadro */
+html.intro-on .intro { display: block; animation: intro-failsafe 0.4s ease 6s forwards; }
+/* se o JS falhar, a abertura se desfaz sozinha e o site nunca fica preso */
+@keyframes intro-failsafe { to { opacity: 0; visibility: hidden; pointer-events: none; } }

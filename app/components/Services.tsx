@@ -19,7 +19,7 @@ export default function Services() {
             onFocus={(e) => e.currentTarget.matches(":focus-visible") && setActive(i)}
             onClick={() => setActive(i)}
           >
-            <img className="cover" src={s.img} alt="" loading="lazy" />
+            <img className="cover" src={s.img} alt="" style={s.pos ? { objectPosition: s.pos } : undefined} loading="lazy" />
             <div className="shade" />
             <span className="svc-n" aria-hidden="true">0{i + 1}</span>
             <div className="svc-body">
@@ -32,7 +32,7 @@ export default function Services() {
       <div className="wrap cards3 svc-grid">
         {SERVICES.map((s, i) => (
           <article key={s.title} className="svc-card">
-            <img className="cover" src={s.img} alt="" loading="lazy" />
+            <img className="cover" src={s.img} alt="" style={s.pos ? { objectPosition: s.pos } : undefined} loading="lazy" />
             <div className="shade" />
             <div className="svc-card-body">
               <span className="num accent" aria-hidden="true">0{i + 1}</span>

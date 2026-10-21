@@ -39,9 +39,10 @@ export const WORKS: Work[] = [
   { img: "/assets/p02.webp", title: "Astra", meta: "Em movimento", pos: "50% 55%", car: "Chevrolet Astra", loc: "Rodovia", exif: ["35mm", "f/4", "1/60", "100"], video: "/assets/astra", url: POST_URL },
 ];
 
-export const SERVICES = [
+// pos (opcional): ponto de enquadramento da foto (object-position), para centralizar o assunto.
+export const SERVICES: { title: string; desc: string; img: string; pos?: string }[] = [
   { title: "Fotografia automotiva", desc: "Para guardar os detalhes, as linhas e a personalidade do carro que faz parte da sua vida.", img: "/assets/servico-fotografia.webp" },
-  { title: "Filmes cinematográficos", desc: "Movimento, som e atmosfera para reviver a sensação de estar ao volante ou admirar seu carro de outra perspectiva.", img: "/assets/p14.webp" },
+  { title: "Filmes cinematográficos", desc: "Movimento, som e atmosfera para reviver a sensação de estar ao volante ou admirar seu carro de outra perspectiva.", img: "/assets/servico-filmes.webp", pos: "50% 48%" },
   { title: "Eventos automotivos", desc: "Os encontros, as pessoas e os momentos que fazem a cultura automotiva acontecer.", img: "/assets/p03.webp" },
   { title: "Produções criativas", desc: "Para transformar aquela ideia que você sempre imaginou em uma experiência visual exclusiva.", img: "/assets/p10.webp" },
 ];

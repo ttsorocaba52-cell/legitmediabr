@@ -55,22 +55,33 @@ export default function Works() {
           return (
             <div
               key={w.title}
-              role="button"
-              tabIndex={0}
-              aria-expanded={on}
               className={`work${on ? " is-on" : ""}`}
               onPointerEnter={(e) => e.pointerType === "mouse" && setActive(i)}
-              onFocus={(e) => e.currentTarget.matches(":focus-visible") && setActive(i)}
-              onClick={open}
-              onKeyDown={onActivate(open)}
             >
+              {/* primeiro no DOM: a ordem do Tab é painel → link "Ver projeto" (o empilhamento é por z-index) */}
+              <div
+                role="button"
+                tabIndex={0}
+                aria-expanded={on}
+                aria-label={`${w.title}. ${w.car}, ${w.loc}. ${on ? "Ampliar fotos" : "Abrir projeto"}`}
+                className="work-hit"
+                onFocus={(e) => e.currentTarget.matches(":focus-visible") && setActive(i)}
+                onClick={open}
+                onKeyDown={onActivate(open)}
+              />
               <img className="cover" src={w.img} alt="" style={{ objectPosition: w.pos }} loading="lazy" />
               {w.video && <WorkVideo src={w.video} pos={w.pos} active={on} />}
               <div className="shade work-shade" />
               <div className="work-title work-fade">
-                <strong>{w.title}</strong>
-                <span className="sr-only">, {w.car}, {w.loc}.</span>
-                <span>Ver projeto <i aria-hidden="true">→</i></span>
+                <strong aria-hidden="true">{w.title}</strong>
+                {w.url && on ? (
+                  <a className="work-link" href={w.url} target="_blank" rel="noopener noreferrer">
+                    Ver projeto <i aria-hidden="true">→</i>
+                    <span className="sr-only"> no Instagram (abre em nova aba)</span>
+                  </a>
+                ) : (
+                  <span aria-hidden="true">Ver projeto <i>→</i></span>
+                )}
               </div>
               <div className="work-num" aria-hidden="true">{pad2(i + 1)}</div>
               <div className="spec work-fade" aria-hidden="true">
@@ -95,21 +106,28 @@ export default function Works() {
       {/* Celular: carrossel com rolagem por toque; os cartões também recebem foco. */}
       <div ref={carousel} className="works-carousel mobile-only" role="group" aria-label="Projetos selecionados">
         {WORKS.map((w, i) => (
-          <div
-            key={w.title}
-            role="button"
-            tabIndex={0}
-            className="work-card"
-            onClick={() => setLb(i)}
-            onKeyDown={onActivate(() => setLb(i))}
-          >
+          <div key={w.title} className="work-card">
             <img className="cover" src={w.img} alt="" style={{ objectPosition: w.pos }} loading="lazy" />
             {w.video && <WorkVideo src={w.video} pos={w.pos} active={snap === i} />}
             <div className="shade" />
-            <div className="work-card-text">
+            <div className="work-card-text" aria-hidden="true">
               <strong>{w.title}</strong>
               <small>{pad2(i + 1)} · {w.meta} · {w.loc}</small>
             </div>
+            <div
+              role="button"
+              tabIndex={0}
+              aria-label={`${w.title}. ${w.car}, ${w.loc}. Ampliar fotos`}
+              className="work-hit"
+              onClick={() => setLb(i)}
+              onKeyDown={onActivate(() => setLb(i))}
+            />
+            {w.url && (
+              <a className="work-card-link" href={w.url} target="_blank" rel="noopener noreferrer">
+                Ver projeto <span aria-hidden="true">↗</span>
+                <span className="sr-only"> de {w.title} no Instagram (abre em nova aba)</span>
+              </a>
+            )}
           </div>
         ))}
       </div>
@@ -155,7 +173,7 @@ function Lightbox({ index, onIndex, onClose }: { index: number; onIndex: (i: num
       else if (e.key === "ArrowRight") onIndex(wrap(index + 1));
       else if (e.key === "ArrowLeft") onIndex(wrap(index - 1));
       else if (e.key === "Tab" && ref.current) {
-        const f = ref.current.querySelectorAll<HTMLElement>("button");
+        const f = ref.current.querySelectorAll<HTMLElement>("button, a[href]");
         const first = f[0], last = f[f.length - 1];
         if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
         else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
@@ -199,6 +217,12 @@ function Lightbox({ index, onIndex, onClose }: { index: number; onIndex: (i: num
         <div className="lb-caption">
           <strong>{cur.title}</strong>
           <small>{cur.meta}</small>
+          {cur.url && (
+            <a className="lb-link" href={cur.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+              Ver projeto no Instagram <span aria-hidden="true">↗</span>
+              <span className="sr-only"> (abre em nova aba)</span>
+            </a>
+          )}
         </div>
         <button className="circle-btn" onClick={(e) => { e.stopPropagation(); onIndex(wrap(index + 1)); }} aria-label="Próximo projeto"><Arrow glyph="→" /></button>
       </div>

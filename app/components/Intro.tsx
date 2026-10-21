@@ -7,6 +7,8 @@ import { ICONS } from "./intro-icons";
    Port da animação "painel-start" (protótipo de motion), comprimida de 7,2 s
    para ~2 s. As cenas originais continuam nos mesmos números (Ignição → Pronto
    → Apagar), em "tempo original"; K converte para segundos reais.
+   Desenhada num <canvas> (sem React por quadro) e com resolução adaptativa: se o
+   aparelho for lento, a abertura baixa a resolução em vez de travar.
    - só aparece na 1ª visita da sessão (ou com ?intro na URL);
    - toque, clique ou qualquer tecla pulam direto para a saída;
    - não aparece com movimento reduzido nem economia de dados;
@@ -18,11 +20,12 @@ const I = 0, P = 3, X = 3.5, END = 4.5; // início, "pronto", começo da saída,
 const DURATION = END * K;
 
 const C = {
-  bg: "#16171a", surface: "#222327", text: "#f7f7f5",
+  surface: "#222327", text: "#f7f7f5",
   n300: "#ececea", n400: "#c9c9c6", n500: "#a0a09c", n700: "#5a5a57", n800: "#3b3b39",
   a200: "#fff3c2", a300: "#ffe88a", a400: "#ffd84d", a500: "#f5c21b", a600: "#d9a70c", a700: "#a07a08",
 };
-const FONT = '"Bricolage Grotesque", system-ui, sans-serif';
+// fonte do sistema de propósito: a do site pode ainda não ter carregado e trocaria no meio da animação
+const FONT = 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
 
 const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 const E = {
@@ -40,81 +43,115 @@ function curve(t: number, inp: number[], out: number[]) {
   return out[out.length - 1];
 }
 
-const pt = (cx: number, cy: number, r: number, a: number): [number, number] => [cx + r * Math.sin((a * Math.PI) / 180), cy - r * Math.cos((a * Math.PI) / 180)];
+const RAD = Math.PI / 180;
+const a2r = (a: number) => (a - 90) * RAD; // 0° = 12 horas, horário
+const pt = (cx: number, cy: number, r: number, a: number): [number, number] => [cx + r * Math.sin(a * RAD), cy - r * Math.cos(a * RAD)];
 const ang = (v: number, max: number) => -120 + 240 * clamp(v / max, 0, 1);
-function arc(cx: number, cy: number, r: number, a0: number, a1: number) {
-  if (a1 - a0 < 0.05) return "";
-  const [x0, y0] = pt(cx, cy, r, a0), [x1, y1] = pt(cx, cy, r, a1);
-  return `M ${x0} ${y0} A ${r} ${r} 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${x1} ${y1}`;
-}
 
-type Layout = { W: number; H: number; d1: [number, number]; d2: [number, number]; panel: { x: number; y: number; w: number; h: number; big: number }; tellY: number; housing: string; edge: { x1: number; y1: number; x2: number; y2: number } };
+type Layout = { W: number; H: number; d1: [number, number]; d2: [number, number]; panel: { x: number; y: number; w: number; h: number; big: number }; tellY: number; housing: string; edge: [number, number, number, number] };
 const LAND: Layout = {
   W: 1920, H: 1080, d1: [480, 540], d2: [1440, 540],
   panel: { x: 790, y: 285, w: 340, h: 510, big: 120 }, tellY: 815,
   housing: "M 480 205 L 1440 205 A 335 335 0 0 1 1440 875 L 480 875 A 335 335 0 0 1 480 205 Z",
-  edge: { x1: 140, y1: 0, x2: 1780, y2: 0 },
+  edge: [140, 0, 1780, 0],
 };
 const PORT: Layout = { // celular em pé: os dois mostradores empilhados
-  W: 760, H: 1700, d1: [380, 335], d2: [380, 1365],
-  panel: { x: 210, y: 690, w: 340, h: 300, big: 78 }, tellY: 1024,
-  housing: "M 45 335 A 335 335 0 0 1 715 335 L 715 1365 A 335 335 0 0 1 45 1365 Z",
-  edge: { x1: 0, y1: 20, x2: 0, y2: 1680 },
+  W: 760, H: 1780, d1: [380, 335], d2: [380, 1445],
+  panel: { x: 210, y: 690, w: 340, h: 372, big: 78 }, tellY: 1082,
+  housing: "M 45 335 A 335 335 0 0 1 715 335 L 715 1445 A 335 335 0 0 1 45 1445 Z",
+  edge: [0, 20, 0, 1760],
 };
 
-function Icon({ name, size, color, opacity = 1 }: { name: string; size: number; color: string; opacity?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 1024 1024" style={{ opacity, display: "block" }} aria-hidden="true">
-      <path transform="matrix(1 0 0 -1 0 960)" d={ICONS[name]} fill={color} />
-    </svg>
-  );
-}
+type Tick = { f: number; major: boolean; hot: boolean; x0: number; y0: number; x1: number; y1: number; lx: number; ly: number; label: string };
+type DialDef = { cx: number; cy: number; r: number; max: number; red?: number; unit: string; level: number; lo: string; hi: string; icon: string; ticks: Tick[] };
+type Scene = { L: Layout; dials: [DialDef, DialDef]; housing: Path2D; edge: CanvasGradient; fill: [CanvasGradient, CanvasGradient]; glow: [CanvasGradient, CanvasGradient]; panelBg: CanvasGradient; housingLen: number };
 
-type DialProps = { cx: number; cy: number; r: number; max: number; step: number; sub: number; label: (v: number) => string | number; value: number; draw: number; on: number; red?: number; unit: string; level: number; lo: string; hi: string; icon: string };
-function Dial({ cx, cy, r, max, step, sub, label, value, draw, on, red, unit, level, lo, hi, icon }: DialProps) {
-  const n = Math.round(max / sub), a = ang(value, max), ticks = [];
+const iconCache: Record<string, Path2D> = {};
+const icon = (n: string) => (iconCache[n] ??= new Path2D(ICONS[n]));
+
+function makeDial(cx: number, cy: number, r: number, max: number, step: number, sub: number, red: number | undefined, label: (v: number) => string, unit: string, level: number, lo: string, hi: string, ic: string): DialDef {
+  const n = Math.round(max / sub), ticks: Tick[] = [];
   for (let i = 0; i <= n; i++) {
     const v = i * sub, major = Math.abs(v / step - Math.round(v / step)) < 1e-6, ta = ang(v, max);
-    const vis = enter((i / n) * 0.8, (i / n) * 0.8 + 0.2)(draw);
     const [x0, y0] = pt(cx, cy, r - 18, ta), [x1, y1] = pt(cx, cy, r - (major ? 46 : 32), ta), [lx, ly] = pt(cx, cy, r - 80, ta);
-    const hot = red != null && v >= red;
-    ticks.push(
-      <g key={i} opacity={vis}>
-        <line x1={x0} y1={y0} x2={x1} y2={y1} stroke={hot ? C.a400 : major ? C.n300 : C.n700} strokeWidth={major ? 3 : 1.5} />
-        {major && <text x={lx} y={ly + 9} textAnchor="middle" fontFamily={FONT} fontSize="27" fontWeight="500" fill={hot ? C.a300 : C.n300}>{label(v)}</text>}
-      </g>,
-    );
+    ticks.push({ f: i / n, major, hot: red != null && v >= red, x0, y0, x1, y1, lx, ly, label: major ? label(v) : "" });
   }
-  return (
-    <g>
-      <circle cx={cx} cy={cy} r={r} fill="none" stroke={C.n800} strokeWidth="1.5" pathLength="1" strokeDasharray="1" strokeDashoffset={1 - draw} transform={`rotate(90 ${cx} ${cy})`} />
-      {red != null && <path d={arc(cx, cy, r - 10, ang(red, max), 120)} stroke={C.a700} strokeWidth="8" fill="none" opacity={on} />}
-      {ticks}
-      <g opacity={on}>
-        <path d={arc(cx, cy, r - 10, -120, a)} stroke={C.a600} strokeWidth="22" fill="none" opacity="0.25" />
-        <path d={arc(cx, cy, r - 10, -120, a)} stroke={C.a400} strokeWidth="5" fill="none" />
-        <text x={cx} y={cy + r * 0.36} textAnchor="middle" fontFamily={FONT} fontSize="20" letterSpacing="2" fill={C.n500}>{unit}</text>
-        <g transform={`rotate(${a} ${cx} ${cy})`}>
-          <path d={`M ${cx - 7} ${cy + 34} L ${cx - 2.5} ${cy - r + 36} L ${cx + 2.5} ${cy - r + 36} L ${cx + 7} ${cy + 34} Z`} fill={C.a300} />
-          <path d={`M ${cx - 2} ${cy} L ${cx} ${cy - r + 36} L ${cx + 2} ${cy} Z`} fill={C.a200} />
-        </g>
-        <circle cx={cx} cy={cy} r="30" fill={C.surface} stroke={C.n700} strokeWidth="1.5" />
-        <circle cx={cx} cy={cy} r="8" fill={C.a500} />
-        <line x1={cx - 70} x2={cx + 70} y1={cy + r * 0.62} y2={cy + r * 0.62} stroke={C.n800} strokeWidth="6" strokeLinecap="round" />
-        <line x1={cx - 70} x2={cx - 70 + 140 * level} y1={cy + r * 0.62} y2={cy + r * 0.62} stroke={C.n300} strokeWidth="6" strokeLinecap="round" />
-        <text x={cx - 70} y={cy + r * 0.62 + 34} fontFamily={FONT} fontSize="18" fill={C.n500}>{lo}</text>
-        <text x={cx + 70} y={cy + r * 0.62 + 34} textAnchor="end" fontFamily={FONT} fontSize="18" fill={C.n500}>{hi}</text>
-      </g>
-      <svg x={cx - 11} y={cy + 158} width="22" height="22" viewBox="0 0 1024 1024" opacity={on}>
-        <path transform="matrix(1 0 0 -1 0 960)" d={ICONS[icon]} fill={C.n500} />
-      </svg>
-    </g>
-  );
+  return { cx, cy, r, max, red, unit, level, lo, hi, icon: ic, ticks };
+}
+
+function buildScene(ctx: CanvasRenderingContext2D, L: Layout): Scene {
+  const rg = (cx: number, cy: number, r: number, stops: [number, string][]) => { const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r); stops.forEach(([o, c]) => g.addColorStop(o, c)); return g; };
+  const edge = ctx.createLinearGradient(...L.edge);
+  edge.addColorStop(0, "rgba(90,90,87,0)"); edge.addColorStop(0.15, C.n700); edge.addColorStop(0.5, C.a600); edge.addColorStop(0.85, C.n700); edge.addColorStop(1, "rgba(90,90,87,0)");
+  const panelBg = ctx.createLinearGradient(0, 0, 0, L.panel.h); panelBg.addColorStop(0, C.surface); panelBg.addColorStop(1, "#101012");
+  const [c1, c2] = [L.d1, L.d2];
+  const fill = (c: [number, number]) => rg(c[0], c[1], 300, [[0, C.surface], [1, "#101012"]]);
+  const glow = (c: [number, number]) => rg(c[0], c[1], 260, [[0, "rgba(217,167,12,0.55)"], [1, "rgba(217,167,12,0)"]]);
+  return {
+    L, edge, panelBg, housing: new Path2D(L.housing),
+    housingLen: L.W > L.H ? 960 * 2 + 2 * Math.PI * 335 : (L.d2[1] - L.d1[1]) * 2 + 2 * Math.PI * 335,
+    fill: [fill(c1), fill(c2)], glow: [glow(c1), glow(c2)],
+    dials: [
+      makeDial(c1[0], c1[1], 300, 8000, 1000, 250, 6500, (v) => String(v / 1000), "x1000 rpm", 0.62, "R", "C", "gas-pump"),
+      makeDial(c2[0], c2[1], 300, 200, 20, 10, undefined, (v) => String(v), "km/h", 0.35, "F", "Q", "thermometer-simple"),
+    ],
+  };
 }
 
 const TELL = ["engine", "battery-warning", "drop", "thermometer-simple", "warning", "headlights"];
 
-function Cluster({ t0, L, bigOverride }: { t0: number; L: Layout; bigOverride?: number }) {
+function txt(ctx: CanvasRenderingContext2D, s: string, x: number, y: number, size: number, color: string, align: CanvasTextAlign = "left", weight = 400, spacing = 0) {
+  ctx.font = `${weight} ${size}px ${FONT}`; ctx.fillStyle = color; ctx.textAlign = align;
+  if ("letterSpacing" in ctx) (ctx as unknown as { letterSpacing: string }).letterSpacing = spacing ? `${spacing}px` : "0px";
+  ctx.fillText(s, x, y);
+}
+function rr(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+  ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+function drawIcon(ctx: CanvasRenderingContext2D, name: string, x: number, y: number, size: number, color: string, alpha: number) {
+  if (alpha <= 0.005) return;
+  ctx.save(); ctx.globalAlpha *= alpha; ctx.translate(x, y); ctx.scale(size / 1024, size / 1024); ctx.transform(1, 0, 0, -1, 0, 960);
+  ctx.fillStyle = color; ctx.fill(icon(name)); ctx.restore();
+}
+
+function drawDial(ctx: CanvasRenderingContext2D, d: DialDef, value: number, draw: number, on: number) {
+  const { cx, cy, r } = d, a = ang(value, d.max);
+  ctx.lineCap = "butt";
+  if (draw > 0.001) { ctx.lineWidth = 1.5; ctx.strokeStyle = C.n800; ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI / 2, Math.PI / 2 + draw * 2 * Math.PI); ctx.stroke(); }
+  ctx.save(); ctx.globalAlpha = on;
+  if (d.red != null) { ctx.lineWidth = 8; ctx.strokeStyle = C.a700; ctx.beginPath(); ctx.arc(cx, cy, r - 10, a2r(ang(d.red, d.max)), a2r(120)); ctx.stroke(); }
+  ctx.restore();
+  for (const t of d.ticks) {
+    const vis = enter(t.f * 0.8, t.f * 0.8 + 0.2)(draw);
+    if (vis < 0.01) continue;
+    ctx.globalAlpha = vis; ctx.lineWidth = t.major ? 3 : 1.5; ctx.strokeStyle = t.hot ? C.a400 : t.major ? C.n300 : C.n700;
+    ctx.beginPath(); ctx.moveTo(t.x0, t.y0); ctx.lineTo(t.x1, t.y1); ctx.stroke();
+    if (t.major) txt(ctx, t.label, t.lx, t.ly + 9, 27, t.hot ? C.a300 : C.n300, "center", 500);
+  }
+  ctx.globalAlpha = on;
+  if (a + 120 > 0.05) {
+    ctx.lineCap = "butt"; ctx.lineWidth = 22; ctx.strokeStyle = C.a600; ctx.globalAlpha = on * 0.25; ctx.beginPath(); ctx.arc(cx, cy, r - 10, a2r(-120), a2r(a)); ctx.stroke();
+    ctx.globalAlpha = on; ctx.lineWidth = 5; ctx.strokeStyle = C.a400; ctx.beginPath(); ctx.arc(cx, cy, r - 10, a2r(-120), a2r(a)); ctx.stroke();
+  }
+  txt(ctx, d.unit, cx, cy + r * 0.36, 20, C.n500, "center", 400, 2);
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(a * RAD);
+  ctx.fillStyle = C.a300; ctx.beginPath(); ctx.moveTo(-7, 34); ctx.lineTo(-2.5, -r + 36); ctx.lineTo(2.5, -r + 36); ctx.lineTo(7, 34); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = C.a200; ctx.beginPath(); ctx.moveTo(-2, 0); ctx.lineTo(0, -r + 36); ctx.lineTo(2, 0); ctx.closePath(); ctx.fill();
+  ctx.restore();
+  ctx.fillStyle = C.surface; ctx.strokeStyle = C.n700; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(cx, cy, 30, 0, 7); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = C.a500; ctx.beginPath(); ctx.arc(cx, cy, 8, 0, 7); ctx.fill();
+  const ly = cy + r * 0.62; ctx.lineCap = "round"; ctx.lineWidth = 6;
+  ctx.strokeStyle = C.n800; ctx.beginPath(); ctx.moveTo(cx - 70, ly); ctx.lineTo(cx + 70, ly); ctx.stroke();
+  ctx.strokeStyle = C.n300; ctx.beginPath(); ctx.moveTo(cx - 70, ly); ctx.lineTo(cx - 70 + 140 * d.level, ly); ctx.stroke();
+  ctx.lineCap = "butt";
+  txt(ctx, d.lo, cx - 70, ly + 34, 18, C.n500, "left");
+  txt(ctx, d.hi, cx + 70, ly + 34, 18, C.n500, "right");
+  drawIcon(ctx, d.icon, cx - 11, cy + 158, 22, C.n500, 1);
+  ctx.globalAlpha = 1;
+}
+
+function render(ctx: CanvasRenderingContext2D, sc: Scene, t0: number) {
+  const L = sc.L;
   const on = enter(I + 0.3, I + 1.2)(t0) * (1 - enter(X, END - 0.1)(t0));
   const draw = sweep(I, I + 1.4)(t0) * (1 - sweep(X, END - 0.1)(t0));
   const sweepUp = sweep(I + 0.9, I + 1.7)(t0) * (1 - sweep(I + 1.8, I + 2.7)(t0));
@@ -124,92 +161,102 @@ function Cluster({ t0, L, bigOverride }: { t0: number; L: Layout; bigOverride?: 
   const ready = enter(P, P + 0.6)(t0) * (1 - enter(X, X + 0.5)(t0));
   const tell = enter(I + 0.5, I + 0.7)(t0) * (1 - enter(I + 2.3, I + 2.6)(t0));
   const zoom = curve(t0, [I, P, X, END], [0.95, 1.02, 1.06, 1.3]);
-  const small = { fontSize: 17, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: C.n500 };
-  const [x1, y1] = [L.edge.x1, L.edge.y1], [x2, y2] = [L.edge.x2, L.edge.y2];
-  const p = L.panel, big = bigOverride ?? p.big;
-  const tellW = 6 * 30 + 5 * 30;
 
-  return (
-    <div style={{ position: "absolute", inset: 0, transform: `scale(${zoom})`, transformOrigin: `${L.W / 2}px ${L.H / 2}px` }}>
-      <svg width={L.W} height={L.H} style={{ position: "absolute", inset: 0 }}>
-        <defs>
-          <linearGradient id="iEdge" x1={x1} y1={y1} x2={x2} y2={y2} gradientUnits="userSpaceOnUse">
-            <stop offset="0" stopColor={C.n700} stopOpacity="0" /><stop offset="0.15" stopColor={C.n700} />
-            <stop offset="0.5" stopColor={C.a600} /><stop offset="0.85" stopColor={C.n700} /><stop offset="1" stopColor={C.n700} stopOpacity="0" />
-          </linearGradient>
-          <radialGradient id="iDialFill"><stop offset="0" stopColor={C.surface} /><stop offset="1" stopColor="#101012" /></radialGradient>
-          <radialGradient id="iDialGlow"><stop offset="0" stopColor={C.a600} stopOpacity="0.55" /><stop offset="1" stopColor={C.a600} stopOpacity="0" /></radialGradient>
-        </defs>
-        <path d={L.housing} fill="#101012" opacity={on} />
-        <path d={L.housing} fill="none" stroke="url(#iEdge)" strokeWidth="1.5" pathLength="1" strokeDasharray="1" strokeDashoffset={1 - draw} />
-        <circle cx={L.d1[0]} cy={L.d1[1]} r="300" fill="url(#iDialFill)" opacity={on} />
-        <circle cx={L.d2[0]} cy={L.d2[1]} r="300" fill="url(#iDialFill)" opacity={on} />
-        <circle cx={L.d1[0]} cy={L.d1[1]} r="260" fill="url(#iDialGlow)" opacity={on * (0.1 + (0.5 * rpm) / 8000)} />
-        <circle cx={L.d2[0]} cy={L.d2[1]} r="260" fill="url(#iDialGlow)" opacity={on * (0.1 + (0.5 * speed) / 200)} />
-        <Dial cx={L.d1[0]} cy={L.d1[1]} r={300} max={8000} step={1000} sub={250} red={6500} label={(v) => v / 1000} value={rpm} draw={draw} on={on} unit="x1000 rpm" level={0.62} lo="R" hi="C" icon="gas-pump" />
-        <Dial cx={L.d2[0]} cy={L.d2[1]} r={300} max={200} step={20} sub={10} label={(v) => v} value={speed} draw={draw} on={on} unit="km/h" level={0.35} lo="F" hi="Q" icon="thermometer-simple" />
-      </svg>
+  ctx.save();
+  ctx.translate(L.W / 2, L.H / 2); ctx.scale(zoom, zoom); ctx.translate(-L.W / 2, -L.H / 2);
 
-      <div style={{ position: "absolute", left: p.x, top: p.y, width: p.w, height: p.h, boxSizing: "border-box", borderRadius: 22, border: `1px solid ${C.n800}`, background: `linear-gradient(180deg, ${C.surface}, #101012)`, padding: "20px 24px", display: "flex", flexDirection: "column", gap: 12, opacity: on, transform: `translateY(${(1 - on) * 16}px)`, fontFamily: FONT, color: C.text }}>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 20, color: C.n400, fontVariantNumeric: "tabular-nums" }}><span>14:32</span><span>22 °C</span></div>
-        <div style={{ display: "flex", justifyContent: "center", gap: 14, fontSize: 22, fontWeight: 500 }}>
-          {["P", "R", "N", "D", "S"].map((g) => (
-            <span key={g} style={{ width: 34, height: 34, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 6, color: g === "P" ? C.a200 : C.n700, border: `1px solid ${g === "P" ? C.a500 : "transparent"}` }}>{g}</span>
-          ))}
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 4 }}>
-          <div style={{ fontSize: big, fontWeight: 500, lineHeight: 1, letterSpacing: "-0.04em", fontVariantNumeric: "tabular-nums" }}>0</div>
-          <div style={{ fontSize: 20, color: C.n400 }}>km/h</div>
-        </div>
-        <div style={{ flex: 1, borderTop: `1px solid ${C.n800}`, paddingTop: 14, display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-          <Icon name="car-profile" size={40} color={C.a400} opacity={ready} />
-          <div style={{ fontSize: 26, fontWeight: 500, color: C.text, opacity: ready, transform: `translateY(${(1 - ready) * 8}px)` }}>Pronto para partir</div>
-          <div style={{ ...small, opacity: ready }}>Pise no freio e engate</div>
-        </div>
-        {p.h > 400 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 16, color: C.n500, fontVariantNumeric: "tabular-nums" }}><span>ODO 48.213 km</span><span>412 km</span></div>}
-      </div>
+  // caixa do painel
+  ctx.globalAlpha = on; ctx.fillStyle = "#101012"; ctx.fill(sc.housing);
+  if (draw > 0.001) {
+    ctx.globalAlpha = 1; ctx.lineWidth = 1.5; ctx.strokeStyle = sc.edge;
+    ctx.setLineDash([draw * sc.housingLen, sc.housingLen]); ctx.stroke(sc.housing); ctx.setLineDash([]);
+  }
+  // fundo e brilho dos mostradores
+  const [d1, d2] = sc.dials;
+  ctx.globalAlpha = on;
+  ctx.fillStyle = sc.fill[0]; ctx.beginPath(); ctx.arc(d1.cx, d1.cy, 300, 0, 7); ctx.fill();
+  ctx.fillStyle = sc.fill[1]; ctx.beginPath(); ctx.arc(d2.cx, d2.cy, 300, 0, 7); ctx.fill();
+  ctx.globalAlpha = on * (0.1 + (0.5 * rpm) / 8000); ctx.fillStyle = sc.glow[0]; ctx.beginPath(); ctx.arc(d1.cx, d1.cy, 260, 0, 7); ctx.fill();
+  ctx.globalAlpha = on * (0.1 + (0.5 * speed) / 200); ctx.fillStyle = sc.glow[1]; ctx.beginPath(); ctx.arc(d2.cx, d2.cy, 260, 0, 7); ctx.fill();
+  ctx.globalAlpha = 1;
+  drawDial(ctx, d1, rpm, draw, on);
+  drawDial(ctx, d2, speed, draw, on);
 
-      <div style={{ position: "absolute", left: (L.W - tellW) / 2, top: L.tellY, width: tellW, display: "flex", justifyContent: "space-between", opacity: on }}>
-        {TELL.map((n) => (
-          <Icon key={n} name={n} size={30} color={n === "headlights" ? C.a400 : C.a300} opacity={n === "headlights" ? Math.max(tell, enter(I + 2.4, I + 2.8)(t0)) : 0.12 + 0.88 * tell} />
-        ))}
-      </div>
-    </div>
-  );
+  // tela central
+  const p = L.panel, big = p.big;
+  if (on > 0.003) {
+    ctx.save(); ctx.globalAlpha = on; ctx.translate(p.x, p.y + (1 - on) * 16);
+    rr(ctx, 0.5, 0.5, p.w - 1, p.h - 1, 22); ctx.fillStyle = sc.panelBg; ctx.fill(); ctx.lineWidth = 1; ctx.strokeStyle = C.n800; ctx.stroke();
+    txt(ctx, "14:32", 24, 38, 20, C.n400, "left"); txt(ctx, "22 °C", p.w - 24, 38, 20, C.n400, "right");
+    const gx = (p.w - 226) / 2;
+    ["P", "R", "N", "D", "S"].forEach((g, i) => {
+      const x = gx + i * 48, sel = g === "P";
+      if (sel) { rr(ctx, x + 0.5, 56.5, 33, 33, 6); ctx.lineWidth = 1; ctx.strokeStyle = C.a500; ctx.stroke(); }
+      txt(ctx, g, x + 17, 80, 22, sel ? C.a200 : C.n700, "center", 500);
+    });
+    const by = 106 + big;
+    txt(ctx, "0", p.w / 2, by - big * 0.12, big, C.text, "center", 500, -big * 0.04);
+    txt(ctx, "km/h", p.w / 2, by + 18, 20, C.n400, "center");
+    const sy = by + 30;
+    ctx.globalAlpha = on; ctx.strokeStyle = C.n800; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(24, sy + 0.5); ctx.lineTo(p.w - 24, sy + 0.5); ctx.stroke();
+    ctx.globalAlpha = on * ready;
+    drawIcon(ctx, "car-profile", p.w / 2 - 20, sy + 14, 40, C.a400, 1);
+    txt(ctx, "Pronto para partir", p.w / 2, sy + 90 + (1 - ready) * 8, 26, C.text, "center", 500);
+    txt(ctx, "PISE NO FREIO E ENGATE", p.w / 2, sy + 118, 17, C.n500, "center", 400, 2.4);
+    if (p.h > 400) { ctx.globalAlpha = on; txt(ctx, "ODO 48.213 km", 24, p.h - 22, 16, C.n500, "left"); txt(ctx, "412 km", p.w - 24, p.h - 22, 16, C.n500, "right"); }
+    ctx.restore();
+  }
+
+  // luzes de alerta
+  ctx.globalAlpha = on;
+  const tx = (L.W - 330) / 2;
+  TELL.forEach((n, i) => drawIcon(ctx, n, tx + i * 60, L.tellY, 30, n === "headlights" ? C.a400 : C.a300, n === "headlights" ? Math.max(tell, enter(I + 2.4, I + 2.8)(t0)) : 0.12 + 0.88 * tell));
+  ctx.restore();
+  ctx.globalAlpha = 1;
 }
 
 export default function Intro() {
-  const [t0, setT0] = useState(0);          // tempo original (7,2 s = protótipo)
-  const [L, setL] = useState<Layout>(LAND);
-  const [scale, setScale] = useState(0.5);
-  const [alpha, setAlpha] = useState(1);
   const [done, setDone] = useState(false);
-  const shift = useRef(0);
+  const wrap = useRef<HTMLDivElement>(null);
+  const cv = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const root = document.documentElement;
-    if (!root.classList.contains("intro-on")) { setDone(true); return; }
+    const canvas = cv.current, box = wrap.current;
+    if (!root.classList.contains("intro-on") || !canvas || !box) { setDone(true); return; }
     try { sessionStorage.setItem("legit-intro", "1"); } catch { /* ok */ }
+    const ctx = canvas.getContext("2d");
+    if (!ctx) { root.classList.remove("intro-on"); window.dispatchEvent(new Event("intro-done")); setDone(true); return; }
 
+    // resolução: até 1,5x do aparelho (o painel é fino e escuro, não precisa de mais);
+    // se os quadros ficarem lentos, desce em degraus (QUALITY) até fluir
+    const QUALITY = [1, 0.75, 0.55, 0.4];
+    let qi = 0, scene: Scene | null = null, vw = 0, vh = 0, fitScale = 1;
     const fit = () => {
-      const w = window.innerWidth, h = window.innerHeight;
-      const l = w / h < 0.9 ? PORT : LAND;
-      setL(l); setScale(Math.min(w / l.W, h / l.H));
+      vw = window.innerWidth; vh = window.innerHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5) * QUALITY[qi];
+      canvas.width = Math.round(vw * dpr); canvas.height = Math.round(vh * dpr);
+      canvas.style.width = vw + "px"; canvas.style.height = vh + "px";
+      const L = vw / vh < 0.9 ? PORT : LAND;
+      fitScale = Math.min(vw / L.W, vh / L.H);
+      ctx.setTransform(dpr * fitScale, 0, 0, dpr * fitScale, (dpr * (vw - L.W * fitScale)) / 2, (dpr * (vh - L.H * fitScale)) / 2);
+      scene = buildScene(ctx, L);
     };
     fit();
-    window.addEventListener("resize", fit);
+    const onResize = () => fit();
+    window.addEventListener("resize", onResize);
 
     const page = document.querySelector(".page");
     page?.setAttribute("inert", "");
     const overflow = root.style.overflow;
     root.style.overflow = "hidden";
 
-    // pular: vai direto para o início da saída
-    let start = performance.now(), raf = 0, finished = false;
-    const skip = () => {
-      const t = ((performance.now() - start) / 1000 + shift.current) / K;
-      if (t < X) shift.current += (X - t) * K;
-    };
+    // O tempo avança por quadro com teto de 50 ms: se a página engasga (hidratação,
+    // aparelho lento), a animação pausa naquele instante em vez de pular quadros.
+    // Enquanto o React hidrata o resto do site a CPU engasga; a tela escura espera
+    // 4 quadros seguidos rápidos (no máx. ~1,2 s) e só então a animação começa.
+    let T = 0, raf = 0, finished = false, last = 0, ema = 16.7, since = 0, calm = 0, waited = 0, started = false;
+    const skip = () => { if (T < X * K) T = X * K; }; // pular: vai direto para o início da saída
     const finish = () => {
       if (finished) return; finished = true;
       root.classList.remove("intro-on");
@@ -219,21 +266,31 @@ export default function Intro() {
       setDone(true);
     };
     const loop = (now: number) => {
-      const T = (now - start) / 1000 + shift.current;
+      const dt = last ? now - last : 16.7;
+      last = now;
+      if (!started) {
+        waited += dt; calm = last && dt <= 22 ? calm + 1 : 0;
+        if (calm >= 4 || waited > 1200) { started = true; window.dispatchEvent(new Event("intro-start")); }
+        else { raf = requestAnimationFrame(loop); return; }
+      }
+      T += Math.min(dt, 50) / 1000;
       if (T >= DURATION) { finish(); return; }
+      // aparelho lento: desce um degrau de resolução (no máx. 1 a cada 12 quadros)
+      ema += (Math.min(dt, 120) - ema) * 0.2; since++;
+      if (since > 12 && ema > 24 && qi < QUALITY.length - 1) { qi++; since = 0; fit(); }
       const t = T / K;
-      setT0(t);
-      setAlpha(1 - enter(X + 0.2, END)(t));
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.restore();
+      if (scene) render(ctx, scene, t);
+      box.style.opacity = String(1 - enter(X + 0.2, END)(t));
       raf = requestAnimationFrame(loop);
     };
     window.addEventListener("pointerdown", skip);
     window.addEventListener("keydown", skip);
-    // a contagem só começa quando a página está pintada (evita comer o início da animação)
-    raf = requestAnimationFrame(() => { start = performance.now(); raf = requestAnimationFrame(loop); });
+    raf = requestAnimationFrame(loop);
 
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener("resize", fit);
+      window.removeEventListener("resize", onResize);
       window.removeEventListener("pointerdown", skip);
       window.removeEventListener("keydown", skip);
       if (!finished) { root.style.overflow = overflow; page?.removeAttribute("inert"); }
@@ -242,10 +299,8 @@ export default function Intro() {
 
   if (done) return null;
   return (
-    <div className="intro" aria-hidden="true" style={{ opacity: alpha }}>
-      <div className="intro-stage" style={{ width: L.W, height: L.H, transform: `translate(-50%, -50%) scale(${scale})` }}>
-        <Cluster t0={t0} L={L} />
-      </div>
+    <div ref={wrap} className="intro" aria-hidden="true">
+      <canvas ref={cv} className="intro-canvas" />
     </div>
   );
 }

@@ -15,14 +15,20 @@ export default function HeroVideo() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const saveData = (navigator as Navigator & { connection?: Conn }).connection?.saveData;
     if (reduced || saveData) return;
-    v.play().catch(() => {});
+    // com a abertura na tela, o vídeo só começa quando ela termina (não decodifica por trás dela)
+    let t: ReturnType<typeof setTimeout> | undefined;
+    const play = () => { clearTimeout(t); v.play().catch(() => {}); };
+    if (document.documentElement.classList.contains("intro-on")) {
+      window.addEventListener("intro-done", play, { once: true });
+      t = setTimeout(play, 7000);
+    } else play();
     const onScroll = () => {
       const y = window.scrollY;
       if (y < window.innerHeight * 1.2) v.style.transform = `translate3d(0,${y * 0.16}px,0)`;
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("intro-done", play); clearTimeout(t); };
   }, []);
 
   return (

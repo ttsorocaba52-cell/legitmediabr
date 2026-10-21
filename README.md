@@ -26,6 +26,7 @@ npm run build
 
 - Só na 1ª visita da sessão; `?intro` na URL força (para testar). Não aparece com movimento reduzido nem economia de dados.
 - Clique, toque ou qualquer tecla pulam. Se o JS falhar, um fallback em CSS tira a tela em ~6 s.
+- Desempenho: desenhada num `<canvas>` (sem React por quadro), com resolução que desce em degraus se o aparelho estiver lento e com o relógio pausando (em vez de pular quadros) quando a página engasga. A animação só começa depois que o navegador termina de "ligar" o site (a tela fica escura e parada por um instante em aparelhos lentos). O vídeo do topo só começa quando ela termina.
 - Velocidade: constante `K` no topo do arquivo (1 = velocidade do protótipo; 0,45 ≈ 2 s). Cores: objeto `C`.
 - Os ícones (`intro-icons.ts`) são do [Phosphor](https://phosphoricons.com) (MIT).
 

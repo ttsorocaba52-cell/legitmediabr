@@ -30,7 +30,7 @@ export const WORKS: Work[] = [
 ];
 
 export const SERVICES = [
-  { title: "Fotografia automotiva", desc: "Para guardar os detalhes, as linhas e a personalidade do carro que faz parte da sua vida.", img: "/assets/p08.webp" },
+  { title: "Fotografia automotiva", desc: "Para guardar os detalhes, as linhas e a personalidade do carro que faz parte da sua vida.", img: "/assets/servico-fotografia.webp" },
   { title: "Filmes cinematográficos", desc: "Movimento, som e atmosfera para reviver a sensação de estar ao volante ou admirar seu carro de outra perspectiva.", img: "/assets/p14.webp" },
   { title: "Eventos automotivos", desc: "Os encontros, as pessoas e os momentos que fazem a cultura automotiva acontecer.", img: "/assets/p03.webp" },
   { title: "Produções criativas", desc: "Para transformar aquela ideia que você sempre imaginou em uma experiência visual exclusiva.", img: "/assets/p10.webp" },

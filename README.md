@@ -32,6 +32,6 @@ Testado de 320px a 2560px (celular, tablet, celular deitado, monitor grande), co
 
 ## Pendências
 
-- Confirmar o @ do Instagram e os links de YouTube e Vimeo em `app/config.ts`.
+- Links do YouTube e do Vimeo em `app/config.ts` (o @ do Instagram já está confirmado: legitmediabr).
 - Trocar as imagens (prints do Instagram, baixa resolução) pelas originais em 1600–2400px.
 - Depoimentos ou marcas de clientes, e imagem de compartilhamento (OG).

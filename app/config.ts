@@ -1,5 +1,5 @@
-// Pendente: confirmar o @ do Instagram e os links das redes com o Felipe.
-export const INSTAGRAM_HANDLE = "legitmedia";
+// Perfil do Instagram (https://www.instagram.com/legitmediabr/). Pendente: links do YouTube e do Vimeo.
+export const INSTAGRAM_HANDLE = "legitmediabr";
 
 // Todo CTA de contato abre o Direct do Instagram (único canal, sem formulário).
 export const DIRECT_URL = `https://ig.me/m/${INSTAGRAM_HANDLE}`;

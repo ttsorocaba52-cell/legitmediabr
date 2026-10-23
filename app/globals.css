@@ -1191,3 +1191,10 @@ main:focus { outline: none; }
 .video-band::before, .video-band::after { content: ""; position: absolute; left: 0; right: 0; z-index: 1; pointer-events: none; height: 28%; }
 .video-band::before { top: 0; background: linear-gradient(180deg, var(--bg), transparent); }
 .video-band::after { bottom: 0; background: linear-gradient(0deg, var(--bg-alt), transparent); }
+
+/* ================= Foto do Felipe: zoom suave ao passar o mouse ================= */
+.about-img img { transform: scale(1); transform-origin: 50% 40%; will-change: transform; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .about-img img { transition: transform 1.3s var(--ease-out); }
+  .about-img:hover img { transform: scale(1.09); }
+}

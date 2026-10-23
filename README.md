@@ -11,7 +11,7 @@ npm run build
 
 ## Onde mexer
 
-- `app/config.ts`: @ do Instagram (todos os CTAs abrem o Direct), links das redes, projetos e especialidades.
+- `app/config.ts`: @ do Instagram (os CTAs de contato abrem o Direct), WhatsApp (botão "Orçamento"), links das redes, projetos e especialidades.
 - `app/page.tsx`: textos e estrutura das seções.
 - `app/globals.css`: tokens de cor, tipografia e layout.
 - `public/assets/`: imagens em WebP e o vídeo do hero (`hero.*` 1080p e `hero-720.*` para celular, em WebM e MP4, mais o `hero-poster.webp`).

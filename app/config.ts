@@ -11,6 +11,8 @@ export const POST_GOLF_AZUL_URL = "https://www.instagram.com/p/Dd_SsThR1cC/";
 export const POST_FERRARI_URL = "https://www.instagram.com/p/Dd2bt1BxV8u/";
 // Post do Instagram da Lamborghini.
 export const POST_LAMBO_URL = "https://www.instagram.com/p/Ddoz-xJxxEL/";
+// Orçamentos pelo WhatsApp (botão "Orçamento" do topo e do menu do celular).
+export const WHATSAPP_URL = "https://api.whatsapp.com/message/ETQIYH74Z4XBD1?autoload=1&app_absent=0";
 export const INSTAGRAM_URL = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
 export const YOUTUBE_URL = "#";
 export const VIMEO_URL = "#";

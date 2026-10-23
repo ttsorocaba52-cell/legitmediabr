@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { withArrow } from "./Arrow";
+import { WHATSAPP_URL } from "../config";
 
 const LINKS = [
   ["Projetos", "#vitrine"],
@@ -57,7 +58,10 @@ export default function Header() {
             {LINKS.map(([label, href]) => (
               <a key={href} href={href}>{label}</a>
             ))}
-            <a href="#contato" className="nav-cta">{withArrow("Orçamento ↗")}</a>
+            <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="nav-cta">
+              {withArrow("Orçamento ↗")}
+              <span className="sr-only"> pelo WhatsApp (abre em nova aba)</span>
+            </a>
           </nav>
           <button ref={btnRef} className="menu-btn" onClick={() => setMenuOpen((o) => !o)} aria-expanded={menuOpen} aria-controls="menu-mobile">
             {menuOpen ? "Fechar" : "Menu"}
@@ -72,6 +76,11 @@ export default function Header() {
               {label}
             </a>
           ))}
+          <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" onClick={close}>
+            <span aria-hidden="true">06</span>
+            Orçamento <span aria-hidden="true">↗</span>
+            <span className="sr-only"> pelo WhatsApp (abre em nova aba)</span>
+          </a>
         </nav>
       )}
     </>

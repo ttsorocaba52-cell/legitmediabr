@@ -15,7 +15,9 @@ export const POST_LAMBO_URL = "https://www.instagram.com/p/Ddoz-xJxxEL/";
 // Número no formato internacional, só dígitos: +55 11 93441-6823.
 export const WHATSAPP_NUMBER = "5511934416823";
 export const WHATSAPP_TEXT = "Olá! Vim pelo site da Legit Media e gostaria de pedir um orçamento.";
-export const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_TEXT)}`;
+// Link do WhatsApp com mensagem pronta (sem argumento, usa a mensagem padrão de orçamento).
+export const whatsappLink = (text: string = WHATSAPP_TEXT) => `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+export const WHATSAPP_URL = whatsappLink();
 // Alternativa (link curto do WhatsApp Business, sem mensagem pronta):
 // https://api.whatsapp.com/message/ETQIYH74Z4XBD1?autoload=1&app_absent=0
 export const INSTAGRAM_URL = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;

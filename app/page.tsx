@@ -6,7 +6,7 @@ import Pillars from "./components/Pillars";
 import Reveal from "./components/Reveal";
 import Services from "./components/Services";
 import Works from "./components/Works";
-import { DIRECT_URL, WHATSAPP_URL, INSTAGRAM_URL, VIMEO_URL, YOUTUBE_URL } from "./config";
+import { DIRECT_URL, WHATSAPP_URL, whatsappLink, INSTAGRAM_URL, VIMEO_URL, YOUTUBE_URL } from "./config";
 
 const ext = { target: "_blank", rel: "noopener noreferrer" } as const;
 
@@ -150,7 +150,7 @@ export default function Home() {
               </ul>
               <div className="format-foot">
                 <small>Valor sob consulta</small>
-                <Btn external variant={f.featured ? "primary" : "secondary"} href={DIRECT_URL}>Conversar sobre meu projeto ↗</Btn>
+                <Btn external variant={f.featured ? "primary" : "secondary"} href={whatsappLink(`Olá! Vim pelo site da Legit Media e gostaria de um orçamento do formato ${f.title}.`)}>Conversar sobre meu projeto ↗</Btn>
               </div>
             </article>
           ))}

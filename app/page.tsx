@@ -159,9 +159,9 @@ export default function Home() {
 
       <section id="processo" className="stack-sec alt">
         <SectionHead label="(06) Como funciona" italic="do Direct" title="à entrega" />
-        <div className="wrap steps">
+        <div className="wrap steps" data-run="">
           {STEPS.map((s, i) => (
-            <div data-reveal="" className="step" key={s.title}>
+            <div data-reveal="" className="step" key={s.title} style={{ "--i": i } as React.CSSProperties}>
               <span className="step-n" data-n={`0${i + 1}`} aria-hidden="true" />
               <h3>{s.title}</h3>
               <p className="body-15">{s.text}</p>

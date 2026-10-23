@@ -53,5 +53,18 @@ export default function Reveal() {
     return () => cleanup();
   }, []);
 
+  // [data-run]: dispara uma animação própria (classe is-run) quando o bloco chega na tela.
+  // Sem movimento reduzido apenas; com ele o bloco fica no estado final, sem animar.
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const els = document.querySelectorAll("[data-run]");
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("is-run"); io.unobserve(en.target); } }),
+      { threshold: 0, rootMargin: "0px 0px -22% 0px" },
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
   return null;
 }

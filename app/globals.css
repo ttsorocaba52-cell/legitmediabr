@@ -1174,3 +1174,42 @@ main:focus { outline: none; }
 /* "Para quem é": cartões da mesma altura e etiquetas alinhadas no fim, mesmo com textos de tamanhos diferentes */
 .audience { align-items: stretch; }
 .aud-card .chips { margin-top: auto; }
+
+/* ================= "Como funciona": o farol percorre a pista e acende cada passo =================
+   Estado base (sem JS ou com movimento reduzido) = o visual estático de sempre.
+   Com JS: a pista começa apagada e, ao chegar na tela (.is-run), um farol percorre a linha
+   deixando um rastro dourado; cada passo acende quando o farol passa (bolinha pisca, número brilha). */
+.steps { position: relative; --d: 0.46s; }
+.step-n { color: color-mix(in oklab, var(--accent) 20%, var(--line)); }
+.steps::before, .steps::after { content: ""; position: absolute; pointer-events: none; opacity: 0; }
+.steps::before { top: -1px; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--accent) 12%, var(--accent)); transform-origin: left; transform: scaleX(0); }
+.steps::after {
+  top: -7px; left: 0; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 18%, var(--accent) 38%, transparent 72%);
+  box-shadow: 0 0 14px 4px color-mix(in oklab, var(--accent) 55%, transparent);
+}
+.js-reveal .steps:not(.is-run) .step::before { background: var(--line); }
+.js-reveal .steps:not(.is-run) .step-n { color: var(--line); }
+
+.steps.is-run::before { animation: steps-trail 2.4s linear both; }
+.steps.is-run::after { animation: steps-light 1.84s linear both; }
+.steps.is-run .step::before { animation: dot-lit 0.7s calc(var(--i) * var(--d)) both; }
+.steps.is-run .step-n { animation: num-lit 0.9s calc(var(--i) * var(--d)) both; }
+
+@keyframes steps-trail { 0% { transform: scaleX(0); opacity: 1; } 76% { transform: scaleX(1); opacity: 1; } 100% { transform: scaleX(1); opacity: 0.35; } }
+@keyframes steps-light { 0% { left: 0; opacity: 0; } 4% { opacity: 1; } 94% { opacity: 1; } 100% { left: 100%; opacity: 0; } }
+@keyframes dot-lit {
+  0% { background: var(--line); box-shadow: 0 0 0 0 transparent; transform: scale(0.8); }
+  45% { background: #fff; box-shadow: 0 0 14px 5px color-mix(in oklab, var(--accent) 70%, transparent); transform: scale(2); }
+  100% { background: var(--accent); box-shadow: 0 0 8px 1px color-mix(in oklab, var(--accent) 45%, transparent); transform: scale(1); }
+}
+@keyframes num-lit {
+  0% { color: var(--line); }
+  35% { color: var(--accent); }
+  100% { color: color-mix(in oklab, var(--accent) 20%, var(--line)); }
+}
+/* telas com 3 colunas ou menos (os passos quebram de linha): sem farol, só acendem em sequência */
+@media (max-width: 1143px) {
+  .steps { --d: 0.25s; }
+  .steps::before, .steps::after { display: none; }
+}

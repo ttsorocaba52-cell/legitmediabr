@@ -20,10 +20,6 @@ npm run build
 
 `app/components/ButtonFx.tsx` é um port da animação "Botão Like Burnout" (protótipo de motion): ao passar o mouse, focar pelo teclado ou tocar, a seta do botão cede lugar a uma roda que afunda, gira no lugar deixando um risco dourado e solta fumaça, treme, dá um tranco e para; depois a seta volta. É desenhada num canvas que só existe durante a animação. Os tempos das cenas ficam em `CUE` no topo do arquivo.
 
-## Animação de "Como funciona"
-
-Ao chegar na tela, um farol percorre a linha deixando um rastro dourado e cada passo acende quando ele passa (bolinha pisca, número brilha). Em telas com 3 colunas ou menos os passos acendem em sequência, sem o farol. Dispara via `data-run` (ver `Reveal.tsx`); com movimento reduzido fica no visual estático. Tempos em `.steps` (`--d`) e nos `@keyframes steps-*` de `globals.css`.
-
 ## Responsivo e acessível
 
 Testado de 320px a 2560px (celular, tablet, celular deitado, monitor grande), com axe-core sem violações.

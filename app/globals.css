@@ -780,6 +780,10 @@ button { font-family: inherit; }
   overflow: hidden;
 }
 .contact .cover { object-position: 50% 45%; }
+/* telas largas: a foto sobe um pouco para o carro ficar acima do título */
+@media (min-width: 760px) {
+  .contact .cover { top: -14%; height: 114%; }
+}
 .contact .shade { background: linear-gradient(0deg, rgba(9, 9, 9, 0.96) 0%, rgba(9, 9, 9, 0.45) 55%, rgba(9, 9, 9, 0.75) 100%); }
 .contact-inner {
   position: relative;

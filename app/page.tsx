@@ -200,7 +200,7 @@ export default function Home() {
       </section>
 
       <section id="contato" className="contact">
-        <img className="cover" src="/assets/p11.webp" alt="Cockpit Ferrari" loading="lazy" />
+        <img className="cover" src="/assets/contato.webp" alt="" loading="lazy" />
         <div className="shade" />
         <div className="wrap contact-inner">
           <div data-reveal="" className="hero-titles">

@@ -23,7 +23,7 @@ function SectionHead({ label, italic, title, text, xl }: { label: string; italic
 
 const AUDIENCE = [
   { img: "/assets/publico-proprietarios.webp", pos: "50% 58%", title: "Proprietários & entusiastas", text: "Para quem sabe que um carro pode representar anos de dedicação, uma conquista ou uma fase inesquecível da vida.", chips: ["Ensaio fotográfico", "Filme do carro"] },
-  { img: "/assets/p12.webp", pos: "50% 55%", title: "Concessionárias & lojas", text: "Para quem deseja apresentar seus veículos com uma produção visual que desperte interesse e valorize cada detalhe.", chips: ["Produção comercial", "Conteúdo audiovisual"] },
+  { img: "/assets/publico-concessionarias.webp", pos: "53% 60%", title: "Concessionárias & lojas", text: "Para quem deseja apresentar seus veículos com uma produção visual que desperte interesse e valorize cada detalhe.", chips: ["Produção comercial", "Conteúdo audiovisual"] },
   { img: "/assets/publico-preparadoras.webp", pos: "50% 45%", title: "Marcas & preparadoras", text: "Para quem faz parte da cultura automotiva e quer transmitir sua identidade através de fotografias e filmes autorais.", chips: ["Campanhas", "Eventos", "Bastidores"] },
 ];
 

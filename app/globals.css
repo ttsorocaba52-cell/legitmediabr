@@ -1174,3 +1174,16 @@ main:focus { outline: none; }
 /* "Para quem é": cartões da mesma altura e etiquetas alinhadas no fim, mesmo com textos de tamanhos diferentes */
 .audience { align-items: stretch; }
 .aud-card .chips { margin-top: auto; }
+
+/* ================= Faixa de vídeo entre "Formatos" e "Como funciona" ================= */
+.video-band { position: relative; height: clamp(260px, 46vw, 640px); overflow: hidden; background: var(--bg); }
+.video-band-media {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: 50% 58%;
+  transition: opacity 0.45s ease;
+}
+.video-band-media.is-fading { opacity: 0; }
+/* as duas bordas se fundem às seções vizinhas (preto em cima, cinza-escuro embaixo) */
+.video-band::before, .video-band::after { content: ""; position: absolute; left: 0; right: 0; z-index: 1; pointer-events: none; height: 28%; }
+.video-band::before { top: 0; background: linear-gradient(180deg, var(--bg), transparent); }
+.video-band::after { bottom: 0; background: linear-gradient(0deg, var(--bg-alt), transparent); }

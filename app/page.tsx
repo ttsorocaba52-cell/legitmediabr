@@ -2,6 +2,7 @@ import Header from "./components/Header";
 import Btn from "./components/Btn";
 import ButtonFx from "./components/ButtonFx";
 import HeroVideo from "./components/HeroVideo";
+import VideoBand from "./components/VideoBand";
 import Pillars from "./components/Pillars";
 import Reveal from "./components/Reveal";
 import Services from "./components/Services";
@@ -156,6 +157,8 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      <VideoBand />
 
       <section id="processo" className="stack-sec alt">
         <SectionHead label="(06) Como funciona" italic="do Direct" title="à entrega" />

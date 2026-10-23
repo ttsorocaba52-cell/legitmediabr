@@ -44,7 +44,7 @@ export const SERVICES: { title: string; desc: string; img: string; pos?: string 
   { title: "Fotografia automotiva", desc: "Para guardar os detalhes, as linhas e a personalidade do carro que faz parte da sua vida.", img: "/assets/servico-fotografia.webp" },
   { title: "Filmes cinematográficos", desc: "Movimento, som e atmosfera para reviver a sensação de estar ao volante ou admirar seu carro de outra perspectiva.", img: "/assets/servico-filmes.webp", pos: "50% 48%" },
   { title: "Eventos automotivos", desc: "Os encontros, as pessoas e os momentos que fazem a cultura automotiva acontecer.", img: "/assets/servico-eventos.webp", pos: "52% 56%" },
-  { title: "Produções criativas", desc: "Para transformar aquela ideia que você sempre imaginou em uma experiência visual exclusiva.", img: "/assets/p10.webp" },
+  { title: "Produções criativas", desc: "Para transformar aquela ideia que você sempre imaginou em uma experiência visual exclusiva.", img: "/assets/servico-producoes.webp", pos: "45% 56%" },
 ];
 
 export const pad2 = (n: number) => String(n).padStart(2, "0");

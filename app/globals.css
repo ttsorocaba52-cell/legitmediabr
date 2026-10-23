@@ -1118,3 +1118,55 @@ main:focus { outline: none; }
   font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text);
 }
 .lb-link { margin-top: 4px; font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); border-bottom: 1px solid currentColor; padding-bottom: 2px; }
+
+/* ================= Etiquetas (chips) como luzes de painel =================
+   Ao passar o mouse (ou tocar), a etiqueta sobe, ganha borda e fundo dourados e
+   uma luz acende no canto, como o indicador de um painel. Não muda o tamanho
+   (nada ao redor se mexe) e não parece link (cursor normal). */
+.chips span {
+  position: relative;
+  cursor: default;
+  transition: transform 0.3s var(--ease-out), border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+.chips span::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0;
+  transform: scale(0.3);
+  transition: opacity 0.25s ease, transform 0.35s var(--ease-out), box-shadow 0.35s ease;
+}
+@media (hover: hover) {
+  .chips span:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    background-color: color-mix(in oklab, var(--accent) 12%, transparent);
+    color: var(--text);
+  }
+  .chips span:hover::after {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 8px 2px color-mix(in oklab, var(--accent) 65%, transparent);
+    animation: chip-on 0.5s var(--ease-out);
+  }
+}
+@media (hover: none) {
+  .chips span:active {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    background-color: color-mix(in oklab, var(--accent) 12%, transparent);
+    color: var(--text);
+  }
+  .chips span:active::after {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 8px 2px color-mix(in oklab, var(--accent) 65%, transparent);
+  }
+}
+/* a luz "pisca" ao acender, como um indicador de painel */
+@keyframes chip-on { 0% { transform: scale(0.3); } 55% { transform: scale(1.5); } 100% { transform: scale(1); } }

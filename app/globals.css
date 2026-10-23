@@ -1170,3 +1170,7 @@ main:focus { outline: none; }
 }
 /* a luz "pisca" ao acender, como um indicador de painel */
 @keyframes chip-on { 0% { transform: scale(0.3); } 55% { transform: scale(1.5); } 100% { transform: scale(1); } }
+
+/* "Para quem é": cartões da mesma altura e etiquetas alinhadas no fim, mesmo com textos de tamanhos diferentes */
+.audience { align-items: stretch; }
+.aud-card .chips { margin-top: auto; }

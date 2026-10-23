@@ -6,7 +6,7 @@ import Pillars from "./components/Pillars";
 import Reveal from "./components/Reveal";
 import Services from "./components/Services";
 import Works from "./components/Works";
-import { DIRECT_URL, INSTAGRAM_URL, VIMEO_URL, YOUTUBE_URL } from "./config";
+import { DIRECT_URL, WHATSAPP_URL, INSTAGRAM_URL, VIMEO_URL, YOUTUBE_URL } from "./config";
 
 const ext = { target: "_blank", rel: "noopener noreferrer" } as const;
 
@@ -169,7 +169,7 @@ export default function Home() {
           ))}
         </div>
         <div data-reveal="" className="btn-row center-row">
-          <Btn external href={DIRECT_URL}>Começar pelo Direct ↗</Btn>
+          <Btn external href={WHATSAPP_URL}>Pedir orçamento ↗</Btn>
           <Btn variant="secondary" href="#vitrine">Ver projetos</Btn>
         </div>
       </section>

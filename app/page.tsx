@@ -161,7 +161,7 @@ export default function Home() {
       <VideoBand />
 
       <section id="processo" className="stack-sec alt">
-        <SectionHead label="(06) Como funciona" italic="do Direct" title="à entrega" />
+        <SectionHead label="(06) Como funciona" italic="do WhatsApp" title="à entrega" />
         <div className="wrap steps">
           {STEPS.map((s, i) => (
             <div data-reveal="" className="step" key={s.title}>
